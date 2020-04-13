@@ -179,4 +179,6 @@ vignettes/*.pdf
 /*_files/
 
 # End of https://www.gitignore.io/api/macos,r,python
-n
+
+# Folders
+data/
