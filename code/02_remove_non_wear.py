@@ -55,14 +55,33 @@ for i in range(0, len(info["start"])):
     key_name = "block_" + str(i + 1)
     blocks[key_name] = aR[info["start"][i]:info["end"][i]]
 
-# Find peaks
-height = 3 * mean(blocks["block_1"])
-distance = 0.4 * samp_freq  # seconds * sampling frequency
-peaks, properties = signal.find_peaks(blocks["block_1"], height=height,
-                                      distance=distance)
 
-fig = plt.figure(figsize=(15, 7))
+minute = 60 * samp_freq
+n_minutes = int(len(blocks["block_1"]) / minute)
+peak_indice = []
+peak_height = []
+for i in range(0, n_minutes):
+    start = i * minute
+    end = (minute * (i + 1)) - 1
+    # Find peaks
+    height = 3 * mean(blocks["block_1"][start:end])
+    distance = 0.4 * samp_freq  # seconds * sampling frequency
+    peaks, properties = signal.find_peaks(blocks["block_1"], height=height,
+                                          distance=distance)
+    peak_indice = np.concatenate((peak_indice, peaks))
+    peak_height = np.concatenate((peak_height, properties["peak_heights"]))
+
+# # Find peaks
+# height = 2 * mean(blocks["block_1"])
+# distance = 0.4 * samp_freq  # seconds * sampling frequency
+# peaks, properties = signal.find_peaks(blocks["block_1"], height=height,
+#                                       distance=distance)
+
+ppm = len(properties["peak_heights"]) / info["duration"][0]
+print(ppm, "peaks per minute detected")
+
+fig = plt.figure(figsize=(15, 6))
 ax1 = fig.add_subplot(1, 1, 1)
 ax1.plot(blocks["block_1"])
-ax1.plot(peaks, blocks["block_1"][peaks], "x")
+ax1.plot(peak_indice, peak_height, "x")
 plt.show()
