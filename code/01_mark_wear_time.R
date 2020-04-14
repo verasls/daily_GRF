@@ -30,6 +30,7 @@ marked <- wearingMarking(
 
 # Summarise
 summary <- sumVct(datavct = marked) %>% as_tibble()
+summary$weekday <- str_to_upper(summary$weekday)
 summary$weekday <- as_factor(summary$weekday)
 # Get start and end lines for raw data (to be used in python script)
 summary <- summary %>% 
