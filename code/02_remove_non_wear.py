@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import time
 from scipy import signal
+from statistics import mean
+import matplotlib.pyplot as plt
 
 
 # Get path to data
@@ -52,3 +54,15 @@ blocks = {}
 for i in range(0, len(info["start"])):
     key_name = "block_" + str(i + 1)
     blocks[key_name] = aR[info["start"][i]:info["end"][i]]
+
+# Find peaks
+height = 3 * mean(blocks["block_1"])
+distance = 0.4 * samp_freq  # seconds * sampling frequency
+peaks, properties = signal.find_peaks(blocks["block_1"], height=height,
+                                      distance=distance)
+
+fig = plt.figure(figsize=(15, 7))
+ax1 = fig.add_subplot(1, 1, 1)
+ax1.plot(blocks["block_1"])
+ax1.plot(peaks, blocks["block_1"][peaks], "x")
+plt.show()
