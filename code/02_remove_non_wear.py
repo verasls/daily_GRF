@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import time
+from scipy import signal
 
 
 # Get path to data
@@ -23,10 +24,27 @@ for i in range(0, len(log.index)):
 start_time = time.time()
 data = pd.read_csv(raw_path)
 print("pd.read_csv took %s seconds" % (time.time() - start_time))
-# Put each axis into a ndarray and get resultant vector
+# Put each axis into a ndarray
 aX = data.iloc[:, 0].to_numpy()
 aY = data.iloc[:, 1].to_numpy()
 aZ = data.iloc[:, 2].to_numpy()
+
+# Filter acceleration signal
+# Create the lowpass filter
+samp_freq = 100
+N = 4  # Filter order
+cutoff = 20  # cut-off frequency (Hz)
+fnyq = samp_freq / 2  # Nyquist frequency (half of the sampling frequency)
+Wn = cutoff / fnyq  # Filter parameter
+
+b, a = signal.butter(N, Wn, btype="low")
+
+# Process signal
+aX = signal.filtfilt(b, a, aX)
+aY = signal.filtfilt(b, a, aY)
+aZ = signal.filtfilt(b, a, aZ)
+
+# Compute resultant vector
 aR = np.sqrt(aX ** 2 + aY ** 2 + aZ ** 2)
 
 # Group wear time blocks in a dictionary
