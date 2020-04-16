@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
-import time
 from scipy import signal
-import matplotlib.pyplot as plt
 
 
 # Get path to data
@@ -22,9 +20,8 @@ for i in range(0, len(log.index)):
     info["end"].append(log.iloc[i, 8] - 1)
 
 # Read raw data file
-start_time = time.time()
+print("Reading raw data")
 data = pd.read_csv(raw_path)
-print("pd.read_csv took %s seconds" % (time.time() - start_time))
 # Put each axis into a ndarray
 aX = data.iloc[:, 0].to_numpy()
 aY = data.iloc[:, 1].to_numpy()
@@ -41,6 +38,7 @@ Wn = cutoff / fnyq  # Filter parameter
 b, a = signal.butter(N, Wn, btype="low")
 
 # Process signal
+print("Filtering acceleration")
 aX = signal.filtfilt(b, a, aX)
 aY = signal.filtfilt(b, a, aY)
 aZ = signal.filtfilt(b, a, aZ)
@@ -49,23 +47,21 @@ aZ = signal.filtfilt(b, a, aZ)
 aR = np.sqrt(aX ** 2 + aY ** 2 + aZ ** 2)
 
 # Group wear time blocks in a dictionary
+print("Grouping the acceleration signal into wear time blocks")
 blocks = {}
 for i in range(0, len(info["start"])):
     key_name = "block_" + str(i + 1)
     blocks[key_name] = aR[info["start"][i]:info["end"][i]]
 
-# Find peaks
+# Find peaks for all blocks
+# Peaks criteria
 height = 1.3
 distance = 0.4 * samp_freq  # seconds * sampling frequency
-peaks, properties = signal.find_peaks(blocks["block_2"], height=height,
-                                      distance=distance)
-
-ppm = len(peaks) / info["duration"][0]
-print(ppm, "peaks per minute detected")
-
-fig = plt.figure(figsize=(15, 6))
-ax1 = fig.add_subplot(1, 1, 1)
-ax1.plot(blocks["block_2"])
-ax1.plot(peaks, properties["peak_heights"], "x")
-plt.xticks(range(0, int(len(blocks["block_1"])) + 1, 60000))
-plt.show()
+# Find peaks
+for i in range(0, len(blocks)):
+    print("Finding peaks for block", str(i + 1))
+    acc_signal = blocks[list(blocks)[i]]
+    peaks, properties = signal.find_peaks(acc_signal, height=height,
+                                          distance=distance)
+    # Substitute the acceleration signal by the peaks magnitudes in the dict
+    blocks[list(blocks)[i]] = properties["peak_heights"]
