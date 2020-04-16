@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from scipy import signal
+import os
+import pickle
 
 
 # Get path to data
@@ -38,7 +40,7 @@ Wn = cutoff / fnyq  # Filter parameter
 b, a = signal.butter(N, Wn, btype="low")
 
 # Process signal
-print("Filtering acceleration")
+print("Filtering acceleration signal")
 aX = signal.filtfilt(b, a, aX)
 aY = signal.filtfilt(b, a, aY)
 aZ = signal.filtfilt(b, a, aZ)
@@ -63,5 +65,16 @@ for i in range(0, len(blocks)):
     acc_signal = blocks[list(blocks)[i]]
     peaks, properties = signal.find_peaks(acc_signal, height=height,
                                           distance=distance)
-    # Substitute the acceleration signal by the peaks magnitudes in the dict
+    # Substitute the acceleration signal by the peaks magnitude in the dict
     blocks[list(blocks)[i]] = properties["peak_heights"]
+
+# Write blocks dictionary into a file
+print("Writing the acceleration peaks magnitude into a file")
+peaks_dir = data_dir + "peaks/"
+if os.path.exists(peaks_dir) is False:
+    os.mkdir(peaks_dir)
+peaks_path = peaks_dir + "068_peaks.txt"
+with open(peaks_path, "wb") as handle:
+    pickle.dump(blocks, handle)
+
+print("Done!")
