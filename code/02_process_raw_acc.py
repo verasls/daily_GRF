@@ -18,8 +18,8 @@ info = {"duration": [], "week_day": [], "start": [], "end": []}
 for i in range(0, len(log.index)):
     info["duration"].append(log.iloc[i, 6])
     info["week_day"].append(str(log.iloc[i, 3])[:3])
-    info["start"].append(log.iloc[0, 7] - 1)
-    info["end"].append(log.iloc[0, 8] - 1)
+    info["start"].append(log.iloc[i, 7] - 1)
+    info["end"].append(log.iloc[i, 8] - 1)
 
 # Read raw data file
 start_time = time.time()
