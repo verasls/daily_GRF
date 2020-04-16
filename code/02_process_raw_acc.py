@@ -20,6 +20,13 @@ for i in range(0, len(log.index)):
     info["week_day"].append(str(log.iloc[i, 3])[:3])
     info["start"].append(log.iloc[i, 7] - 1)
     info["end"].append(log.iloc[i, 8] - 1)
+print("Writing wear time info into a file")
+info_dir = data_dir + "info/"
+if os.path.exists(info_dir) is False:
+    os.mkdir(info_dir)
+info_path = info_dir + "068_info.txt"
+with open(info_path, "wb") as handle:
+    pickle.dump(info, handle)
 
 # Read raw data file
 print("Reading raw data")
