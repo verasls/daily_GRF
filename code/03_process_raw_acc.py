@@ -28,6 +28,11 @@ if os.path.exists(raw_output) is False:
 log_files = sorted(glob.glob(log_data + "*.txt"))
 raw_files = sorted(glob.glob(raw_data + "*.txt"))
 
+# Check if there are the same number of log and raw files
+if len(log_files) == len(raw_files) is False:
+    raise ValueError
+    print("There is a different number of raw and log files")
+
 # Process raw data
 for i in range(0, len(log_files)):
     print("Processing file", i + 1, "out of", len(log_files))
