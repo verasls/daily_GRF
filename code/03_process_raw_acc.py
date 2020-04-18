@@ -12,21 +12,23 @@ data_dir = "/Volumes/LVERAS/daily_GRF/data/"
 output_dir = "/Volumes/LVERAS/daily_GRF/output/"
 
 # Specific
-log_data = output_dir + "02_wear_time_logs/"
-raw_data = output_dir + "01_raw_acc_data/"
+log_data_dir = output_dir + "02_wear_time_logs/"
+raw_data_dir = output_dir + "01_raw_acc_data/"
 
-log_output = output_dir + "03_wear_time_info/"
-raw_output = output_dir + "04_acc_peaks/"
+log_output_dir = output_dir + "03_wear_time_info/"
+raw_output_dir = output_dir + "04_acc_peaks/"
 
 # Create output directory if it does not exist
-if os.path.exists(log_output) is False:
-    os.mkdir(log_output)
-if os.path.exists(raw_output) is False:
-    os.mkdir(raw_output)
+if os.path.exists(log_output_dir) is False:
+    os.mkdir(log_output_dir)
+if os.path.exists(raw_output_dir) is False:
+    os.mkdir(raw_output_dir)
 
 # List files
-log_files = sorted(glob.glob(log_data + "*.txt"))
-raw_files = sorted(glob.glob(raw_data + "*.txt"))
+log_files = [os.path.basename(x) for x in glob.glob(log_data_dir + "*.txt")]
+raw_files = [os.path.basename(x) for x in glob.glob(raw_data_dir + "*.txt")]
+log_files = sorted(log_files)
+raw_files = sorted(raw_files)
 
 # Check if there are the same number of log and raw files
 if len(log_files) == len(raw_files) is False:
@@ -37,9 +39,13 @@ if len(log_files) == len(raw_files) is False:
 for i in range(0, len(log_files)):
     print("Processing file", i + 1, "out of", len(log_files))
 
+    # Get info from file name
+    ID_num = log_files[i][:3]
+    eval_num = log_files[0][4:7]
+
     # Read wear time log
-    print("Reading wear time log file:", log_files[i][-25:])
-    log = pd.read_csv(log_files[i])
+    print("Reading wear time log file:", log_files[i])
+    log = pd.read_csv(log_data_dir + log_files[i])
 
     # Get info from log
     info = {"duration": [], "week_day": [], "start": [], "end": []}
@@ -51,14 +57,15 @@ for i in range(0, len(log_files)):
 
     print("Writing wear time info")
     # Writing info dict in to a file
-    log_output_file = log_output + log_files[i][-25:-8] + "_info.txt"
+    log_output_file = log_output_dir + ID_num + "_" + eval_num
+    log_output_file = log_output_file + "_wear_time_info.txt"
     with open(log_output_file, "wb") as handle:
         pickle.dump(info, handle)
-    print("File written:", log_files[i][-25:-8] + "_info.txt")
+    print("File written:", ID_num + "_" + eval_num + "_wear_time_info.txt")
 
     # Read raw data file
-    print("Reading raw accelerometer data file:", raw_files[i][-15:])
-    data = pd.read_csv(raw_files[i])
+    print("Reading raw accelerometer data file:", raw_files[i])
+    data = pd.read_csv(raw_data_dir + raw_files[i])
     # Put each axis into a ndarray
     aX = data.iloc[:, 0].to_numpy()
     aY = data.iloc[:, 1].to_numpy()
@@ -105,9 +112,10 @@ for i in range(0, len(log_files)):
 
     # Write blocks dictionary into a file
     print("Writing the acceleration peaks magnitude into a file")
-    raw_output_file = raw_output + raw_files[i][-15:-8] + "_acc_peaks.txt"
+    raw_output_file = raw_output_dir + ID_num + "_" + eval_num
+    raw_output_file = raw_output_file + "_acc_peaks.txt"
     with open(raw_output_file, "wb") as handle:
         pickle.dump(blocks, handle)
-    print("File written:", raw_files[i][-15:-8] + "_acc_peaks.txt")
+    print("File written:", ID_num + "_" + eval_num + "_acc_peaks.txt")
 
 print("Done!")
