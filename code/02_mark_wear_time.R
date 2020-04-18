@@ -26,50 +26,54 @@ files <- list.files(agd_data_dir)
 # Marking wear time -------------------------------------------------------
 
 for (i in 1:length(files)) {
-  # Get info from file name
-  ID_num <- str_sub(files[i], 1, 3)
-  eval_num <- str_sub(files[i], 5, 7)
-  
-  # Read agd file
   message <- str_c(
     "Reading file ", i, " out of ", length(files), ": ", files[i], sep = ""
   )
   print(message)
   
-  data_file <- str_c(agd_data_dir, files[i], sep = "")
-  agd <- readActigraph(data_file)
+  # Get info from file name
+  ID_num <- str_sub(files[i], 1, 3)
+  eval_num <- str_sub(files[i], 5, 7)
   
-  # Mark wear and non-wear time using agd epoch file
-  print("Marking wear time")
-  marked <- wearingMarking(
-    dataset = agd,
-    frame = 90,
-    perMinuteCts = 1,
-    getMinuteMarking = TRUE
-  )
-  
-  # Summarise wear time information
-  wear_time_log <- sumVct(datavct = marked) %>% as_tibble()
-  wear_time_log$weekday <- str_to_upper(wear_time_log$weekday)
-  wear_time_log$weekday <- as_factor(wear_time_log$weekday)
-  
-  # Get start and end lines for raw data (to be used in python script)
-  wear_time_log <- wear_time_log %>% 
-    mutate(
-      start_idx = (start * 60 * 100) - (59 * 100),
-      end_idx = (end * 60 * 100) - (59 * 100)
-    )
-  
-  # Write log into txt
-  print("Writing wear time log")
+  # Check if output file already exists for the current ID and mark wear time
+  # only if not
   output_file <- str_c(ID_num, eval_num, "wear_time_log.txt", sep = "_")
-  write_delim(
-    wear_time_log,
-    str_c(agd_output_dir, output_file, sep = ""),
-    delim = ","
-  )
-  message <- str_c("File written: ", output_file, sep = "")
-  print(message)
+  output_path <- str_c(agd_output_dir, output_file, sep = "")
+  if (file.exists(output_path) == FALSE) {
+    # Read agd file
+    data_file <- str_c(agd_data_dir, files[i], sep = "")
+    agd <- readActigraph(data_file)
+    
+    # Mark wear and non-wear time using agd epoch file
+    print("Marking wear time")
+    marked <- wearingMarking(
+      dataset = agd,
+      frame = 90,
+      perMinuteCts = 1,
+      getMinuteMarking = TRUE
+    )
+    
+    # Summarise wear time information
+    wear_time_log <- sumVct(datavct = marked) %>% as_tibble()
+    wear_time_log$weekday <- str_to_upper(wear_time_log$weekday)
+    wear_time_log$weekday <- as_factor(wear_time_log$weekday)
+    
+    # Get start and end lines for raw data (to be used in python script)
+    wear_time_log <- wear_time_log %>% 
+      mutate(
+        start_idx = (start * 60 * 100) - (59 * 100),
+        end_idx = (end * 60 * 100) - (59 * 100)
+      )
+    
+    # Write log into txt
+    print("Writing wear time log")
+    write_delim(wear_time_log, output_path, delim = ",")
+    message <- str_c("File written: ", output_file, sep = "")
+    print(message) 
+  } else {
+    message <- str_c("File ", files[i], " has already been processed", sep = "")
+    print(message)
+  }
 }
 
 print("Done!")
