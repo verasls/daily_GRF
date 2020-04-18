@@ -24,33 +24,37 @@ files <- list.files(gt3x_data_dir)
 # Converting gt3x into txt ------------------------------------------------
 
 for (i in 1:length(files)) {
-  # Get info from file name
-  ID_num <- str_sub(files[i], 1, 3)
-  eval_num <- str_sub(files[i], 5, 7)
-  
-  # Read gt3x file (raw)
   message <- str_c(
     "Reading file ", i, " out of ", length(files), ": ", files[i], sep = ""
   )
   print(message)
   
-  data_file <- str_c(gt3x_data_dir, files[i], sep = "")
-  gt3x <- read.gt3x(
-    data_file, imputeZeroes = TRUE, asDataFrame = TRUE
-  )
-  # Select only the acc axes
-  gt3x <- gt3x[, 1:3]
+  # Get info from file name
+  ID_num <- str_sub(files[i], 1, 3)
+  eval_num <- str_sub(files[i], 5, 7)
   
-  print("Converting gt3x into txt")
-  # Write raw data into a txt file
+  # Check if output file already exists for the current ID and convert the file
+  # only if not
   output_file <- str_c(ID_num, eval_num, "raw.txt", sep = "_")
-  write_delim(
-    gt3x, 
-    str_c(gt3x_output_dir, output_file, sep = ""), 
-    delim = ","
-  )
-  message <- str_c("File written: ", output_file, sep = "")
-  print(message)
+  output_path <- str_c(gt3x_output_dir, output_file, sep = "")
+  if (file.exists(output_path) == FALSE) {
+    # Read gt3x file (raw)
+    data_file <- str_c(gt3x_data_dir, files[i], sep = "")
+    gt3x <- read.gt3x(
+      data_file, imputeZeroes = TRUE, asDataFrame = TRUE
+    )
+    # Select only the acc axes
+    gt3x <- gt3x[, 1:3]
+    
+    print("Converting gt3x into txt")
+    # Write raw data into a txt file
+    write_delim(gt3x, output_path, delim = ",")
+    message <- str_c("File written: ", output_file, sep = "")
+    print(message) 
+  } else {
+    message <- str_c("File ", files[i], " has already been processed", sep = "")
+    print(message)
+  }
 }
 
 print("Done!")
