@@ -12,27 +12,31 @@ data_dir <- "/Volumes/LVERAS/daily_GRF/data/"
 output_dir <- "/Volumes/LVERAS/daily_GRF/output/"
 
 # Specific
-agd_data <- str_c(data_dir, "agd/", sep = "")
-agd_output <- str_c(output_dir, "02_wear_time_logs/", sep = "")
+agd_data_dir <- str_c(data_dir, "agd/", sep = "")
+agd_output_dir <- str_c(output_dir, "02_wear_time_logs/", sep = "")
 
 # Create output directory if it does not exist
-if (dir.exists(agd_output) == FALSE) {
-  dir.create(agd_output, recursive = TRUE)
+if (dir.exists(agd_output_dir) == FALSE) {
+  dir.create(agd_output_dir, recursive = TRUE)
 }
 
 # List files in data directory
-files <- list.files(agd_data)
+files <- list.files(agd_data_dir)
 
 # Marking wear time -------------------------------------------------------
 
 for (i in 1:length(files)) {
+  # Get info from file name
+  ID_num <- str_sub(files[i], 1, 3)
+  eval_num <- str_sub(files[i], 5, 7)
+  
   # Read agd file
   message <- str_c(
     "Reading file ", i, " out of ", length(files), ": ", files[i], sep = ""
   )
   print(message)
   
-  data_file <- str_c(agd_data, files[i], sep = "")
+  data_file <- str_c(agd_data_dir, files[i], sep = "")
   agd <- readActigraph(data_file)
   
   # Mark wear and non-wear time using agd epoch file
@@ -58,10 +62,10 @@ for (i in 1:length(files)) {
   
   # Write log into txt
   print("Writing wear time log")
-  output_file <- str_c(str_sub(files[i], 1, 7), "_wear_time_log.txt", sep = "")
+  output_file <- str_c(ID_num, eval_num, "wear_time_log.txt", sep = "_")
   write_delim(
     wear_time_log,
-    str_c(agd_output, output_file, sep = ""),
+    str_c(agd_output_dir, output_file, sep = ""),
     delim = ","
   )
   message <- str_c("File written: ", output_file, sep = "")
