@@ -41,27 +41,34 @@ for i in range(0, len(log_files)):
 
     # Get info from file name
     ID_num = log_files[i][:3]
-    eval_num = log_files[0][4:7]
+    eval_num = log_files[i][4:7]
 
-    # Read wear time log
-    print("Reading wear time log file:", log_files[i])
-    log = pd.read_csv(log_data_dir + log_files[i])
-
-    # Get info from log
-    info = {"duration": [], "week_day": [], "start": [], "end": []}
-    for j in range(0, len(log.index)):
-        info["duration"].append(log.iloc[j, 6])
-        info["week_day"].append(str(log.iloc[j, 3])[:3])
-        info["start"].append(log.iloc[j, 7] - 1)
-        info["end"].append(log.iloc[j, 8] - 1)
-
-    print("Writing wear time info")
-    # Writing info dict in to a file
+    # Check if output file already exists for the current ID and get wear time
+    # info only if not
     log_output_file = log_output_dir + ID_num + "_" + eval_num
     log_output_file = log_output_file + "_wear_time_info.txt"
-    with open(log_output_file, "wb") as handle:
-        pickle.dump(info, handle)
-    print("File written:", ID_num + "_" + eval_num + "_wear_time_info.txt")
+    if os.path.exists(log_output_file) is False:
+        # Read wear time log
+        print("Reading wear time log file:", log_files[i])
+        log = pd.read_csv(log_data_dir + log_files[i])
+
+        # Get info from log
+        info = {"duration": [], "week_day": [], "start": [], "end": []}
+        for j in range(0, len(log.index)):
+            info["duration"].append(log.iloc[j, 6])
+            info["week_day"].append(str(log.iloc[j, 3])[:3])
+            info["start"].append(log.iloc[j, 7] - 1)
+            info["end"].append(log.iloc[j, 8] - 1)
+
+        print("Writing wear time info")
+        # Writing info dict in to a file
+        with open(log_output_file, "wb") as handle:
+            pickle.dump(info, handle)
+        print("File written:", ID_num + "_" + eval_num + "_wear_time_info.txt")
+    else:
+        message = "File " + ID_num + "_" + eval_num + "_wear_time_info.txt"
+        message = message + " already exists"
+        print(message)
 
     # Read raw data file
     print("Reading raw accelerometer data file:", raw_files[i])
