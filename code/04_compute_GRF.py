@@ -123,12 +123,31 @@ for i in range(0, len(acc_files)):
     else:
         # If file already exists, read it and append the new values
         df = pd.read_csv(acc_output_dir + "GRF_data.csv")
-        df_new = pd.DataFrame(d)
-        df = df.append(df_new)
-        # Sort by ID
-        df["ID"] = df["ID"].astype(int)
-        df = df.sort_values(by=["ID", "eval"])
-        # Write a csv file
-        df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
+        # If the current ID and eval already exists in the file, overwrite it
+        idx = np.where((df["ID"] == int(ID_num)) & (df["eval"] == eval_num))
+        if idx[0].size > 0:
+            exists = True
+        elif idx[0].size == 0:
+            exists = False
+        if exists is True:
+            # Remove row indices associated with the current ID and eval
+            idx = idx[0]
+            df = df.drop(idx, axis="rows")
+            # Append new values
+            df_new = pd.DataFrame(d)
+            df = df.append(df_new)
+            # Sort by ID
+            df["ID"] = df["ID"].astype(int)
+            df = df.sort_values(by=["ID", "eval"])
+            # Write a csv file
+            df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
+        elif exists is False:
+            df_new = pd.DataFrame(d)
+            df = df.append(df_new)
+            # Sort by ID
+            df["ID"] = df["ID"].astype(int)
+            df = df.sort_values(by=["ID", "eval"])
+            # Write a csv file
+            df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
 
 print("Done!")
