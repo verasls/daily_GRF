@@ -116,5 +116,7 @@ for i in range(0, len(acc_files)):
 
     # Put dict into a dataframe
     df = pd.DataFrame(d)
+    # Write a csv file
+    df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
 
 print("Done!")
