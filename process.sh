@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 echo $'Running analysis...\n'
 
 echo $'Step 1: Convert gt3x files into txt'
@@ -16,5 +16,11 @@ echo $'...extract information from wear time log...'
 echo $'...filter raw accelerometer signal and find acceleration peaks'
 echo $'Script 03_process_raw_acc.py\n'
 python3 code/03_process_raw_acc.py
+echo $'\n'
 
-echo $'\nAnalysis finished'
+echo $'Step 4: Compute ground reaction forces'
+echo $'Script 04_compute_GRF\n'
+python3 code/04_compute_GRF.py
+echo $'\n'
+
+echo $'Analysis finished'
