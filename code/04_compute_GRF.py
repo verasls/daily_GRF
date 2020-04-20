@@ -114,9 +114,17 @@ for i in range(0, len(acc_files)):
         d["sd_peaks"].append(np.std(GRF))
         d["sum_peaks"].append(np.sum(GRF))
 
-    # Put dict into a dataframe
-    df = pd.DataFrame(d)
-    # Write a csv file
-    df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
+    # Check if dataframe is already in a file, if not, write a new
+    if os.path.exists(acc_output_dir + "GRF_data.csv") is False:
+        # Put dict into a dataframe
+        df = pd.DataFrame(d)
+        # Write a csv file
+        df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
+    else:
+        # If file already exists, read it and append the new values
+        df = pd.read_csv(acc_output_dir + "GRF_data.csv")
+        df_new = pd.DataFrame(d)
+        df = df.append(df_new)
+        df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
 
 print("Done!")
