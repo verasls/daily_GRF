@@ -11,6 +11,7 @@ output_dir = "/Volumes/LVERAS/daily_GRF/output/"
 
 # Specific
 body_mass_path = data_dir + "body_mass.txt"
+info_data_dir = output_dir + "03_wear_time_info/"
 acc_data_dir = output_dir + "04_acc_peaks/"
 acc_output_dir = output_dir + "05_GRF/"
 
@@ -28,33 +29,92 @@ for i in range(0, len(bm_df.index)):
     elif len(bm_df.loc[i, "ID"]) == 1:
         bm_df.loc[i, "ID"] = "00" + bm_df.loc[i, "ID"]
 
-# List acc peaks files
+# List files
+info_files = [os.path.basename(x) for x in glob.glob(info_data_dir + "*.txt")]
 acc_files = [os.path.basename(x) for x in glob.glob(acc_data_dir + "*.txt")]
 
-
-# ----- beging looping through the files here -----
-
-# Get info from file name
-ID_num = acc_files[0][:3]
-eval_num = acc_files[0][4:7]
-
-# Get subject body mass
-# Find index corresponding to the current subject in the bm_df
-ID_idx = list(np.where((bm_df["ID"] == ID_num) & (bm_df["eval"] == eval_num)))
-# Check if there is only one index corresponding to the subject, otherwise
-# there was an error
-if len(ID_idx) > 1:
+# Check if there are the same number of info and acc files
+if len(info_files) == len(acc_files) is False:
     raise ValueError
-    print("More than one entry for the same subject was found in the "
-          "body_mass.txt file")
-if len(ID_idx) == 0:
-    raise ValueError
-    print("No entry was found for the current subject in the "
-          "body_mass.txt file")
-ID_idx = int(ID_idx[0])
+    print("There is a different number of info and acc files")
 
-body_mass = bm_df.loc[ID_idx, "body_mass"]
+# Compute GRF
+for i in range(0, len(acc_files)):
+    print("Processing file", i + 1, "out of", len(acc_files))
+    # Get info from file name
+    ID_num = acc_files[i][:3]
+    eval_num = acc_files[i][4:7]
 
-# Read acc peaks file
-with open(acc_data_dir + acc_files[0], "rb") as handle:
-    acc_peaks = pickle.loads(handle.read())
+    # Get subject body mass
+    # Find index corresponding to the current subject in the bm_df
+    ID_idx = list(np.where((bm_df["ID"] == ID_num) &
+                  (bm_df["eval"] == eval_num)))
+    # Check if there is only one index corresponding to the subject, otherwise
+    # there was an error
+    if len(ID_idx) > 1:
+        raise ValueError
+        print("More than one entry for the same subject was found in the "
+              "body_mass.txt file")
+    if len(ID_idx) == 0:
+        raise ValueError
+        print("No entry was found for the current subject in the "
+              "body_mass.txt file")
+    ID_idx = int(ID_idx[0])
+
+    body_mass = bm_df.loc[ID_idx, "body_mass"]
+
+    # Read wear time info
+    with open(info_data_dir + info_files[i], "rb") as handle:
+        info = pickle.loads(handle.read())
+
+    # Read acc peaks file
+    print("Reading acceleration peaks file:", acc_files[i])
+    with open(acc_data_dir + acc_files[i], "rb") as handle:
+        acc_peaks = pickle.loads(handle.read())
+
+    # Equation coefficients
+    b0 = - 698.7031  # intercept
+    b1 = 1047.5129  # acc
+    b2 = - 345.2605  # acc2
+    b3 = 3.8294  # body mass
+    b4 = 6.0219  # body mass * acc
+
+    thrsh = 3  # threshold for maximum acceleration value in calibration
+
+    # Initialize dictionary with variables of interest
+    d = {"ID": [],
+         "eval": [],
+         "week_day": [],
+         "duration": [],
+         "n_peaks": [],
+         "n_threshold": [],
+         "min_peaks": [],
+         "max_peaks": [],
+         "mean_peaks": [],
+         "sd_peaks": [],
+         "sum_peaks": []}
+    # Compute GRF for all of the wear time blocks
+    for j in range(0, len(acc_peaks)):
+        print("Computing ground reaction forces for block", str(j + i))
+        # Compute GRF
+        acc = acc_peaks[list(acc_peaks)[j]]
+        GRF = b0 + (b1 * acc) + (b2 * (acc ** 2)) + (b3 * body_mass) \
+            + (b4 * body_mass * acc)
+
+        # Fill variables
+        d["ID"].append(ID_num)
+        d["eval"].append(eval_num)
+        d["week_day"].append(info["week_day"][j])
+        d["duration"].append(info["duration"][j])
+        d["n_peaks"].append(len(acc))
+        d["n_threshold"].append(len(np.where(acc > thrsh)[0]))
+        d["min_peaks"].append(min(GRF))
+        d["max_peaks"].append(max(GRF))
+        d["mean_peaks"].append(np.mean(GRF))
+        d["sd_peaks"].append(np.std(GRF))
+        d["sum_peaks"].append(np.sum(GRF))
+
+    # Put dict into a dataframe
+    df = pd.DataFrame(d)
+
+print("Done!")
