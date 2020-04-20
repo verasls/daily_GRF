@@ -55,7 +55,7 @@ for (i in 1:length(files)) {
     
     # Summarise wear time information
     wear_time_log <- sumVct(datavct = marked) %>% as_tibble()
-    wear_time_log$weekday <- str_to_upper(wear_time_log$weekday)
+    wear_time_log$weekday <- str_to_lower(wear_time_log$weekday)
     wear_time_log$weekday <- as_factor(wear_time_log$weekday)
     
     # Get start and end lines for raw data (to be used in python script)
