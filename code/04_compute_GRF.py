@@ -125,6 +125,10 @@ for i in range(0, len(acc_files)):
         df = pd.read_csv(acc_output_dir + "GRF_data.csv")
         df_new = pd.DataFrame(d)
         df = df.append(df_new)
+        # Sort by ID
+        df["ID"] = df["ID"].astype(int)
+        df = df.sort_values(by=["ID", "eval"])
+        # Write a csv file
         df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
 
 print("Done!")
