@@ -1,6 +1,7 @@
 import glob
 import os
 import pickle
+import time
 import pandas as pd
 import numpy as np
 from scipy import signal
@@ -77,7 +78,10 @@ for i in range(0, len(log_files)):
     if os.path.exists(raw_output_file) is False:
         # Read raw data file
         print("Reading raw accelerometer data file:", raw_files[i])
+        start_time = time.time()
         data = pd.read_csv(raw_data_dir + raw_files[i])
+        time_dur = round((time.time() - start_time), 1)
+        print("Reading took %s seconds" % time_dur)
         # Put each axis into a ndarray
         aX = data.iloc[:, 0].to_numpy()
         aY = data.iloc[:, 1].to_numpy()
@@ -95,9 +99,12 @@ for i in range(0, len(log_files)):
 
         # Process signal
         print("Filtering acceleration signal")
+        start_time = time.time()
         aX = signal.filtfilt(b, a, aX)
         aY = signal.filtfilt(b, a, aY)
         aZ = signal.filtfilt(b, a, aZ)
+        time_dur = round((time.time() - start_time), 1)
+        print("Filtering took %s seconds" % time_dur)
 
         # Compute resultant vector
         aR = np.sqrt(aX ** 2 + aY ** 2 + aZ ** 2)
