@@ -45,7 +45,9 @@ main <- function() {
         dataset = agd,
         frame = 90,
         perMinuteCts = 1,
-        getMinuteMarking = TRUE
+        cts = "vm",
+        streamFrame = 10,
+        allowanceFrame = 2
       )
       
       # Summarise wear time information
