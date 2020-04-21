@@ -41,14 +41,14 @@ main <- function() {
       
       # Mark wear and non-wear time using agd epoch file
       print("Marking wear time")
-      marked <- wearingMarking(
+      invisible(capture.output(marked <- wearingMarking(
         dataset = agd,
         frame = 90,
         perMinuteCts = 1,
         cts = "vm",
         streamFrame = 10,
         allowanceFrame = 2
-      )
+      )))
       
       # Summarise wear time information
       wear_time_log <- sumVct(datavct = marked) %>% as_tibble()
