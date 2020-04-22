@@ -10,11 +10,11 @@ from scipy import signal
 
 def process_raw_acc(data_dir, output_dir):
     # Set paths
-    log_data_dir = output_dir + "02_wear_time_logs/"
-    raw_data_dir = output_dir + "01_raw_acc_data/"
+    log_data_dir = output_dir + "part2_wear_time_logs/"
+    raw_data_dir = output_dir + "part1_raw_acc_data/"
 
-    log_output_dir = output_dir + "03_wear_time_info/"
-    raw_output_dir = output_dir + "04_acc_peaks/"
+    log_output_dir = output_dir + "part3_wear_time_info/"
+    raw_output_dir = output_dir + "part4_acc_peaks/"
 
     # Create output directory if it does not exist
     if os.path.exists(log_output_dir) is False:
