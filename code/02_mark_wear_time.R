@@ -1,5 +1,6 @@
 main <- function() {
   suppressPackageStartupMessages(require(stringr))
+  suppressPackageStartupMessages(require(dplyr))
   suppressPackageStartupMessages(require(PhysicalActivity))
   suppressPackageStartupMessages(require(data.table))
 
@@ -9,7 +10,7 @@ main <- function() {
 
   # Set paths
   agd_data_dir <- str_c(data_dir, "agd/", sep = "")
-  agd_output_dir <- str_c(output_dir, "02_wear_time_logs/", sep = "")
+  agd_output_dir <- str_c(output_dir, "part2_wear_time_logs/", sep = "")
 
   # Create output directory if it does not exist
   if (dir.exists(agd_output_dir) == FALSE) {
@@ -52,9 +53,8 @@ main <- function() {
       )))
       
       # Summarise wear time information
-      wear_time_log <- sumVct(datavct = marked) %>% as_tibble()
+      wear_time_log <- sumVct(datavct = marked)
       wear_time_log$weekday <- str_to_lower(wear_time_log$weekday)
-      wear_time_log$weekday <- as_factor(wear_time_log$weekday)
       
       # Get start and end lines for raw data (to be used in python script)
       wear_time_log <- wear_time_log %>% 
