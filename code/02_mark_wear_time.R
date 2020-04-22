@@ -1,6 +1,7 @@
 main <- function() {
-  suppressPackageStartupMessages(library(tidyverse))
-  suppressPackageStartupMessages(library(PhysicalActivity))
+  suppressPackageStartupMessages(require(stringr))
+  suppressPackageStartupMessages(require(PhysicalActivity))
+  suppressPackageStartupMessages(require(data.table))
 
   args <- commandArgs(trailingOnly = TRUE)
   data_dir <- args[1]
@@ -64,7 +65,7 @@ main <- function() {
       
       # Write log into txt
       print("Writing wear time log")
-      write_delim(wear_time_log, output_path, delim = ",")
+      fwrite(wear_time_log, output_path)
       message <- str_c("File written: ", output_file, sep = "")
       print(message) 
     } else {
