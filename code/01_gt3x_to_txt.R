@@ -1,6 +1,7 @@
 main <- function() {
-  suppressPackageStartupMessages(require(tidyverse, quietly = TRUE))
-  suppressPackageStartupMessages(require(read.gt3x, quietly = TRUE))
+  suppressPackageStartupMessages(require(stringr))
+  suppressPackageStartupMessages(require(read.gt3x))
+  suppressPackageStartupMessages(require(data.table))
 
   args <- commandArgs(trailingOnly = TRUE)
   data_dir <- args[1]
@@ -50,7 +51,7 @@ main <- function() {
       print("Converting gt3x into txt")
       # Write raw data into a txt file    
       start_time <- Sys.time()
-      write_delim(gt3x, output_path, delim = ",")
+      fwrite(gt3x, output_path)
       end_time <- Sys.time()
       time <- round(as.numeric(difftime(end_time, start_time, units = "secs")), 1)
       message <- str_c("Conversion took ", time, " seconds", sep = "")
