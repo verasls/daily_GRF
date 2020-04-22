@@ -1,12 +1,8 @@
-main <- function() {
+main <- function(data_dir, output_dir) {
   suppressPackageStartupMessages(require(stringr))
   suppressPackageStartupMessages(require(dplyr))
   suppressPackageStartupMessages(require(PhysicalActivity))
   suppressPackageStartupMessages(require(data.table))
-
-  args <- commandArgs(trailingOnly = TRUE)
-  data_dir <- args[1]
-  output_dir <- args[2]
 
   # Set paths
   agd_data_dir <- str_c(data_dir, "agd/", sep = "")
@@ -77,4 +73,9 @@ main <- function() {
   print("Done!")
 }
 
-main()
+if(!interactive()) {
+	args <- commandArgs(trailingOnly = TRUE)
+  	data_dir <- args[1]
+  	output_dir <- args[2]
+	main()
+}
