@@ -1,23 +1,26 @@
-main <- function(data_dir, output_dir) {
+set_paths <- function(data_dir, output_dir) {
   suppressPackageStartupMessages(require(stringr))
-  suppressPackageStartupMessages(require(dplyr))
-  suppressPackageStartupMessages(require(PhysicalActivity))
-  suppressPackageStartupMessages(require(data.table))
-
+  
   # Set paths
-  agd_data_dir <- str_c(data_dir, "agd/", sep = "")
-  agd_output_dir <- str_c(output_dir, "part2_wear_time_logs/", sep = "")
-
+  agd_data_dir <<- str_c(data_dir, "agd/", sep = "")
+  agd_output_dir <<- str_c(output_dir, "part2_wear_time_logs/", sep = "")
+  
   # Create output directory if it does not exist
   if (dir.exists(agd_output_dir) == FALSE) {
     dir.create(agd_output_dir, recursive = TRUE)
   }
   
   # List files in data directory
-  files <- list.files(agd_data_dir)
+  files <<- list.files(agd_data_dir)  
+}
+
+mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
+  suppressPackageStartupMessages(require(stringr))
+  suppressPackageStartupMessages(require(dplyr))
+  suppressPackageStartupMessages(require(PhysicalActivity))
+  suppressPackageStartupMessages(require(data.table))
   
   # Mark wear time
-  
   for (i in 1:length(files)) {
     message <- str_c(
       "Reading file ", i, " out of ", length(files), ": ", files[i], sep = ""
@@ -73,9 +76,14 @@ main <- function(data_dir, output_dir) {
   print("Done!")
 }
 
-if(!interactive()) {
-	args <- commandArgs(trailingOnly = TRUE)
-  	data_dir <- args[1]
-  	output_dir <- args[2]
-	main()
+main <- function(data_dir, output_dir) {
+  set_paths(data_dir, output_dir)
+  mark_wear_time(files, agd_data_dir, agd_output_dir)
+}
+
+if (!interactive()) {
+  args <- commandArgs(trailingOnly = TRUE)
+  data_dir <- args[1]
+  output_dir <- args[2]  
+  main(data_dir, output_dir)
 }
