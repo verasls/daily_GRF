@@ -9,9 +9,9 @@ import numpy as np
 def compute_GRF(data_dir, output_dir):
     # Set pahts
     body_mass_path = data_dir + "body_mass.txt"
-    info_data_dir = output_dir + "03_wear_time_info/"
-    acc_data_dir = output_dir + "04_acc_peaks/"
-    acc_output_dir = output_dir + "05_GRF/"
+    info_data_dir = output_dir + "part3_wear_time_info/"
+    acc_data_dir = output_dir + "part4_acc_peaks/"
+    acc_output_dir = output_dir + "part5_GRF/"
 
     # Create output directory if it does not exist
     if os.path.exists(acc_output_dir) is False:
