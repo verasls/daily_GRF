@@ -9,7 +9,7 @@ main <- function() {
     
   # Set paths
   gt3x_data_dir <- str_c(data_dir, "gt3x/", sep = "")
-  gt3x_output_dir <- str_c(output_dir, "01_raw_acc_data/", sep = "")
+  gt3x_output_dir <- str_c(output_dir, "part1_raw_acc_data/", sep = "")
 
   # Create output directory if it does not exist
   if (dir.exists(gt3x_output_dir) == FALSE) {
