@@ -55,33 +55,57 @@ def get_body_mass(bm_df, ID_num, eval_num):
     return body_mass
 
 
-def get_equation_coefficients():
+def get_equation_coefficients(GRF_component, acc_position):
     # Make variables global
-    global b0
-    global b1
-    global b2
-    global b3
-    global b4
-    global thrsh
+    global b0  # intercept
+    global b1  # acc
+    global b2  # acc2
+    global b3  # body mass
+    global b4  # body mass * acc
+    global thrsh  # threshold for maximum acceleration value in calibration
 
     # Equation coefficients
-    b0 = - 698.7031  # intercept
-    b1 = 1047.5129  # acc
-    b2 = - 345.2605  # acc2
-    b3 = 3.8294  # body mass
-    b4 = 6.0219  # body mass * acc
+    if GRF_component == "resultant" and acc_position == "back":
+        b0 = - 698.7031
+        b1 = 1047.5129
+        b2 = - 345.2605
+        b3 = 3.8294
+        b4 = 6.0219
+        thrsh = 2.5
+    elif GRF_component == "vertical" and acc_position == "back":
+        b0 = - 776.8934
+        b1 = 1042.9052
+        b2 = - 336.2115
+        b3 = 6.213
+        b4 = 5.0805
+        thrsh = 2.5
+    elif GRF_component == "resultant" and acc_position == "hip":
+        b0 = - 300.9909
+        b1 = 522.6850
+        b2 = - 171.5606
+        b3 = 3.9596
+        b4 = 5.3671
+        thrsh = 3
+    elif GRF_component == "vertical" and acc_position == "hip":
+        b0 = - 435.7365
+        b1 = 586.6627
+        b2 = - 188.9689
+        b3 = 5.8047
+        b4 = 4.9544
+        thrsh = 3
 
-    thrsh = 3  # threshold for maximum acceleration value in calibration
 
+def compute_GRF(acc, body_mass, GRF_component, acc_position):
+    get_equation_coefficients(GRF_component, acc_position)
 
-def compute_GRF(acc, body_mass):
     GRF = b0 + (b1 * acc) + (b2 * (acc ** 2)) + (b3 * body_mass) \
         + (b4 * body_mass * acc)
 
     return GRF
 
 
-def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass):
+def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
+                  GRF_component, acc_position):
     # Initialize dictionary with variables of interest
     d = {"ID": [],
          "eval": [],
@@ -99,7 +123,7 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass):
         print("Computing ground reaction forces for block", str(i + 1))
         # Compute GRF
         acc = acc_peaks[list(acc_peaks)[i]]
-        GRF = compute_GRF(acc, body_mass)
+        GRF = compute_GRF(acc, body_mass, GRF_component, acc_position)
         # Fill variables
         d["ID"].append(ID_num)
         d["eval"].append(eval_num)
@@ -156,7 +180,7 @@ def write_GRF_data(ID_num, eval_num, data):
             df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
 
 
-def main(data_dir, output_dir):
+def main(data_dir, output_dir, GRF_component, acc_position):
     set_paths(data_dir, output_dir)
 
     # Read body mass data
@@ -189,8 +213,8 @@ def main(data_dir, output_dir):
             acc_peaks = pickle.loads(handle.read())
 
         # Compute ground reaction force and summarize values into a dict
-        get_equation_coefficients()
-        d = summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass)
+        d = summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
+                          GRF_component, acc_position)
 
         # Write summarized data into a csv file
         write_GRF_data(ID_num, eval_num, d)
@@ -198,4 +222,4 @@ def main(data_dir, output_dir):
     print("Done!")
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
