@@ -8,13 +8,21 @@ import numpy as np
 from scipy import signal
 
 
-def process_raw_acc(data_dir, output_dir):
+def set_pahts(data_dir, output_dir):
+    # Make variables global
+    global log_data_dir
+    global log_output_dir
+    global log_files
+    global raw_data_dir
+    global raw_output_dir
+    global raw_files
+
     # Set paths
     log_data_dir = output_dir + "part2_wear_time_logs/"
     raw_data_dir = output_dir + "part1_raw_acc_data/"
 
     log_output_dir = output_dir + "part3_wear_time_info/"
-    raw_output_dir = output_dir + "part4_acc_peaks/"
+    raw_output_dir = output_dir + "part3_acc_peaks/"
 
     # Create output directory if it does not exist
     if os.path.exists(log_output_dir) is False:
@@ -33,6 +41,55 @@ def process_raw_acc(data_dir, output_dir):
         raise ValueError
         print("There is a different number of raw and log files")
 
+
+def get_wear_time_info(i, ID_num, eval_num):
+    # Make info dict global
+    global info
+
+    # Check if output file already exists for the current ID and get wear
+    # time info only if not
+    log_output_file = log_output_dir + ID_num + "_" + eval_num
+    log_output_file = log_output_file + "_wear_time_info.txt"
+    if os.path.exists(log_output_file) is False:
+        # Read wear time log
+        print("Reading wear time log file:", log_files[i])
+        log = pd.read_csv(log_data_dir + log_files[i])
+        # Get info from log
+        info = {"duration": [], "week_day": [], "start": [], "end": []}
+        for j in range(0, len(log.index)):
+            info["duration"].append(log.iloc[j, 6])
+            info["week_day"].append(str(log.iloc[j, 3])[:3])
+            info["start"].append(log.iloc[j, 7] - 1)
+            info["end"].append(log.iloc[j, 8] - 1)
+        print("Writing wear time info")
+        # Writing info dict in to a file
+        with open(log_output_file, "wb") as handle:
+            pickle.dump(info, handle)
+        print("File written: " + ID_num + "_" +
+              eval_num + "_wear_time_info.txt")
+    else:
+        message = "File " + ID_num + "_" + eval_num + "_wear_time_info.txt"
+        message = message + " already exists"
+        print(message)
+
+
+def filter_acc_signal(sig, samp_freq=100):
+    # Create the lowpass filter
+    N = 4  # Filter order
+    cutoff = 20  # cut-off frequency (Hz)
+    fnyq = samp_freq / 2  # Nyquist frequency
+    Wn = cutoff / fnyq  # Filter parameter
+    b, a = signal.butter(N, Wn, btype="low")
+
+    # Process signal
+    sig = signal.filtfilt(b, a, sig)
+
+    return sig
+
+
+def main(data_dir, output_dir, samp_freq=100, min_peak_height=1.3):
+    set_pahts(data_dir, output_dir)
+
     # Process raw data
     for i in range(0, len(log_files)):
         print("Processing file", i + 1, "out of", len(log_files))
@@ -41,33 +98,7 @@ def process_raw_acc(data_dir, output_dir):
         ID_num = log_files[i][:3]
         eval_num = log_files[i][4:7]
 
-        # Check if output file already exists for the current ID and get wear
-        # time info only if not
-        log_output_file = log_output_dir + ID_num + "_" + eval_num
-        log_output_file = log_output_file + "_wear_time_info.txt"
-        if os.path.exists(log_output_file) is False:
-            # Read wear time log
-            print("Reading wear time log file:", log_files[i])
-            log = pd.read_csv(log_data_dir + log_files[i])
-
-            # Get info from log
-            info = {"duration": [], "week_day": [], "start": [], "end": []}
-            for j in range(0, len(log.index)):
-                info["duration"].append(log.iloc[j, 6])
-                info["week_day"].append(str(log.iloc[j, 3])[:3])
-                info["start"].append(log.iloc[j, 7] - 1)
-                info["end"].append(log.iloc[j, 8] - 1)
-
-            print("Writing wear time info")
-            # Writing info dict in to a file
-            with open(log_output_file, "wb") as handle:
-                pickle.dump(info, handle)
-            print("File written: " + ID_num + "_" +
-                  eval_num + "_wear_time_info.txt")
-        else:
-            message = "File " + ID_num + "_" + eval_num + "_wear_time_info.txt"
-            message = message + " already exists"
-            print(message)
+        get_wear_time_info(i, ID_num, eval_num)
 
         # Check if output file already exists for the current ID and process
         # the raw acceleration only if not
@@ -86,21 +117,11 @@ def process_raw_acc(data_dir, output_dir):
             aZ = data.iloc[:, 2].to_numpy()
 
             # Filter acceleration signal
-            # Create the lowpass filter
-            samp_freq = 100
-            N = 4  # Filter order
-            cutoff = 20  # cut-off frequency (Hz)
-            fnyq = samp_freq / 2  # Nyquist frequency
-            Wn = cutoff / fnyq  # Filter parameter
-
-            b, a = signal.butter(N, Wn, btype="low")
-
-            # Process signal
             print("Filtering acceleration signal")
             start_time = time.time()
-            aX = signal.filtfilt(b, a, aX)
-            aY = signal.filtfilt(b, a, aY)
-            aZ = signal.filtfilt(b, a, aZ)
+            aX = filter_acc_signal(aX)
+            aY = filter_acc_signal(aY)
+            aZ = filter_acc_signal(aZ)
             time_dur = round((time.time() - start_time), 1)
             print("Filtering took %s seconds" % time_dur)
 
@@ -116,7 +137,7 @@ def process_raw_acc(data_dir, output_dir):
 
             # Find peaks for all blocks
             # Peaks criteria
-            height = 1.3
+            height = min_peak_height
             distance = 0.4 * samp_freq  # seconds * sampling frequency
             # Find peaks
             for j in range(0, len(blocks)):
@@ -141,4 +162,4 @@ def process_raw_acc(data_dir, output_dir):
     print("Done!")
 
 if __name__ == "__main__":
-    process_raw_acc(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2])
