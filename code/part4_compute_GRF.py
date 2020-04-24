@@ -55,7 +55,7 @@ def get_body_mass(bm_df, ID_num, eval_num):
     return body_mass
 
 
-def get_equation_coefficients(GRF_component, acc_position):
+def get_equation_coefficients(GRF_component, acc_placement):
     # Make variables global
     global b0  # intercept
     global b1  # acc
@@ -64,29 +64,35 @@ def get_equation_coefficients(GRF_component, acc_position):
     global b4  # body mass * acc
     global thrsh  # threshold for maximum acceleration value in calibration
 
+    # Check arguments values
+    if GRF_component not in ("resultant", "vertical"):
+        raise ValueError("GRF_component value must be resultant or vertical")
+    if acc_placement not in ("hip", "back"):
+        raise ValueError("acc_placement value must be back or hip")
+
     # Equation coefficients
-    if GRF_component == "resultant" and acc_position == "back":
+    if GRF_component == "resultant" and acc_placement == "back":
         b0 = - 698.7031
         b1 = 1047.5129
         b2 = - 345.2605
         b3 = 3.8294
         b4 = 6.0219
         thrsh = 2.5
-    elif GRF_component == "vertical" and acc_position == "back":
+    elif GRF_component == "vertical" and acc_placement == "back":
         b0 = - 776.8934
         b1 = 1042.9052
         b2 = - 336.2115
         b3 = 6.213
         b4 = 5.0805
         thrsh = 2.5
-    elif GRF_component == "resultant" and acc_position == "hip":
+    elif GRF_component == "resultant" and acc_placement == "hip":
         b0 = - 300.9909
         b1 = 522.6850
         b2 = - 171.5606
         b3 = 3.9596
         b4 = 5.3671
         thrsh = 3
-    elif GRF_component == "vertical" and acc_position == "hip":
+    elif GRF_component == "vertical" and acc_placement == "hip":
         b0 = - 435.7365
         b1 = 586.6627
         b2 = - 188.9689
@@ -95,8 +101,8 @@ def get_equation_coefficients(GRF_component, acc_position):
         thrsh = 3
 
 
-def compute_GRF(acc, body_mass, GRF_component, acc_position):
-    get_equation_coefficients(GRF_component, acc_position)
+def compute_GRF(acc, body_mass, GRF_component, acc_placement):
+    get_equation_coefficients(GRF_component, acc_placement)
 
     GRF = b0 + (b1 * acc) + (b2 * (acc ** 2)) + (b3 * body_mass) \
         + (b4 * body_mass * acc)
@@ -105,7 +111,8 @@ def compute_GRF(acc, body_mass, GRF_component, acc_position):
 
 
 def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
-                  GRF_component, acc_position):
+                  GRF_component, acc_placement):
+
     # Initialize dictionary with variables of interest
     d = {"ID": [],
          "eval": [],
@@ -118,24 +125,29 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
          "mean_peaks": [],
          "sd_peaks": [],
          "sum_peaks": []}
-    # Compute GRF for all of the wear time blocks
-    for i in range(0, len(acc_peaks)):
-        print("Computing ground reaction forces for block", str(i + 1))
-        # Compute GRF
-        acc = acc_peaks[list(acc_peaks)[i]]
-        GRF = compute_GRF(acc, body_mass, GRF_component, acc_position)
-        # Fill variables
-        d["ID"].append(ID_num)
-        d["eval"].append(eval_num)
-        d["week_day"].append(info["week_day"][i])
-        d["duration"].append(info["duration"][i])
-        d["n_peaks"].append(len(acc))
-        d["n_threshold"].append(len(np.where(acc > thrsh)[0]))
-        d["min_peaks"].append(min(GRF))
-        d["max_peaks"].append(max(GRF))
-        d["mean_peaks"].append(np.mean(GRF))
-        d["sd_peaks"].append(np.std(GRF))
-        d["sum_peaks"].append(np.sum(GRF))
+
+    if GRF_component in ("resultant", "vertical"):
+        # Compute GRF for all of the wear time blocks using one of the
+        # components
+        for i in range(0, len(acc_peaks)):
+            print("Computing ground reaction forces for block", str(i + 1))
+            # Compute GRF
+            acc = acc_peaks[list(acc_peaks)[i]]
+            GRF = compute_GRF(acc, body_mass, GRF_component, acc_placement)
+            # Fill variables
+            d["ID"].append(ID_num)
+            d["eval"].append(eval_num)
+            d["week_day"].append(info["week_day"][i])
+            d["duration"].append(info["duration"][i])
+            d["n_peaks"].append(len(acc))
+            d["n_threshold"].append(len(np.where(acc > thrsh)[0]))
+            d["min_peaks"].append(min(GRF))
+            d["max_peaks"].append(max(GRF))
+            d["mean_peaks"].append(np.mean(GRF))
+            d["sd_peaks"].append(np.std(GRF))
+            d["sum_peaks"].append(np.sum(GRF))
+    else:
+        raise ValueError("GRF_component value must be resultant or vertical")
 
     return d
 
@@ -180,7 +192,7 @@ def write_GRF_data(ID_num, eval_num, data):
             df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
 
 
-def main(data_dir, output_dir, GRF_component, acc_position):
+def main(data_dir, output_dir, GRF_component, acc_placement):
     set_paths(data_dir, output_dir)
 
     # Read body mass data
@@ -214,7 +226,7 @@ def main(data_dir, output_dir, GRF_component, acc_position):
 
         # Compute ground reaction force and summarize values into a dict
         d = summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
-                          GRF_component, acc_position)
+                          GRF_component, acc_placement)
 
         # Write summarized data into a csv file
         write_GRF_data(ID_num, eval_num, d)
