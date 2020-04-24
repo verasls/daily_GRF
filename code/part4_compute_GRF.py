@@ -119,11 +119,16 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
          "duration": [],
          "n_peaks": [],
          "n_threshold": [],
-         "min_peaks": [],
-         "max_peaks": [],
-         "mean_peaks": [],
-         "sd_peaks": [],
-         "sum_peaks": []}
+         "min_peaks_N": [],
+         "max_peaks_N": [],
+         "mean_peaks_N": [],
+         "sd_peaks_N": [],
+         "sum_peaks_N": [],
+         "min_peaks_BW": [],
+         "max_peaks_BW": [],
+         "mean_peaks_BW": [],
+         "sd_peaks_BW": [],
+         "sum_peaks_BW": []}
 
     if GRF_component in ("resultant", "vertical"):
         # Compute GRF for all of the wear time blocks using one of the
@@ -143,18 +148,28 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
             d["n_peaks"].append(len(acc))
             if len(acc) == 0:
                 d["n_threshold"].append(0)
-                d["min_peaks"].append(0)
-                d["max_peaks"].append(0)
-                d["mean_peaks"].append(0)
-                d["sd_peaks"].append(0)
-                d["sum_peaks"].append(0)
+                d["min_peaks_N"].append(0)
+                d["max_peaks_N"].append(0)
+                d["mean_peaks_N"].append(0)
+                d["sd_peaks_N"].append(0)
+                d["sum_peaks_N"].append(0)
+                d["min_peaks_N"].append(0)
+                d["max_peaks_BW"].append(0)
+                d["mean_peaks_BW"].append(0)
+                d["sd_peaks_BW"].append(0)
+                d["sum_peaks_BW"].append(0)
             else:
                 d["n_threshold"].append(len(np.where(acc > thrsh)[0]))
-                d["min_peaks"].append(min(GRF))
-                d["max_peaks"].append(max(GRF))
-                d["mean_peaks"].append(np.mean(GRF))
-                d["sd_peaks"].append(np.std(GRF))
-                d["sum_peaks"].append(np.sum(GRF))
+                d["min_peaks_N"].append(min(GRF))
+                d["max_peaks_N"].append(max(GRF))
+                d["mean_peaks_N"].append(np.mean(GRF))
+                d["sd_peaks_N"].append(np.std(GRF))
+                d["sum_peaks_N"].append(np.sum(GRF))
+                d["min_peaks_BW"].append(min(GRF) / (body_mass * 9.81))
+                d["max_peaks_BW"].append(max(GRF) / (body_mass * 9.81))
+                d["mean_peaks_BW"].append(np.mean(GRF) / (body_mass * 9.81))
+                d["sd_peaks_BW"].append(np.std(GRF) / (body_mass * 9.81))
+                d["sum_peaks_BW"].append(np.sum(GRF) / (body_mass * 9.81))
     else:
         raise ValueError("GRF_component value must be resultant or vertical")
 
