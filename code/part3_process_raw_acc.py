@@ -87,8 +87,12 @@ def filter_acc_signal(sig, samp_freq=100):
     return sig
 
 
-def main(data_dir, output_dir, samp_freq=100, min_peak_height=1.3):
+def main(data_dir, output_dir, acc_component, samp_freq=100,
+         min_peak_height=1.3):
     set_pahts(data_dir, output_dir)
+
+    if acc_component not in ("resultant", "vertical"):
+        raise ValueError("acc_component value must be resultant or vertical")
 
     # Process raw data
     for i in range(0, len(log_files)):
@@ -111,29 +115,47 @@ def main(data_dir, output_dir, samp_freq=100, min_peak_height=1.3):
             data = pd.read_csv(raw_data_dir + raw_files[i])
             time_dur = round((time.time() - start_time), 1)
             print("Reading took %s seconds" % time_dur)
-            # Put each axis into a ndarray
-            aX = data.iloc[:, 0].to_numpy()
-            aY = data.iloc[:, 1].to_numpy()
-            aZ = data.iloc[:, 2].to_numpy()
 
-            # Filter acceleration signal
-            print("Filtering acceleration signal")
-            start_time = time.time()
-            aX = filter_acc_signal(aX)
-            aY = filter_acc_signal(aY)
-            aZ = filter_acc_signal(aZ)
-            time_dur = round((time.time() - start_time), 1)
-            print("Filtering took %s seconds" % time_dur)
+            # Filter acceleration
+            if acc_component == "resultant":
+                # Put each axis into a ndarray
+                aX = data.iloc[:, 0].to_numpy()
+                aY = data.iloc[:, 1].to_numpy()
+                aZ = data.iloc[:, 2].to_numpy()
 
-            # Compute resultant vector
-            aR = np.sqrt(aX ** 2 + aY ** 2 + aZ ** 2)
+                # Filter acceleration signal
+                print("Filtering acceleration signal")
+                start_time = time.time()
+                aX = filter_acc_signal(aX)
+                aY = filter_acc_signal(aY)
+                aZ = filter_acc_signal(aZ)
+                time_dur = round((time.time() - start_time), 1)
+                print("Filtering took %s seconds" % time_dur)
+
+                # Compute resultant vector
+                aR = np.sqrt(aX ** 2 + aY ** 2 + aZ ** 2)
+            elif acc_component == "vertical":
+                # Put vertical axes into a ndarray
+                aX = data.iloc[:, 0].to_numpy()
+
+                # Filter acceleration signal
+                print("Filtering acceleration signal")
+                start_time = time.time()
+                aX = filter_acc_signal(aX)
+                time_dur = round((time.time() - start_time), 1)
+                print("Filtering took %s seconds" % time_dur)
 
             # Group wear time blocks in a dictionary
             print("Grouping the acceleration signal into wear time blocks")
             blocks = {}
-            for j in range(0, len(info["start"])):
-                key_name = "block_" + str(j + 1)
-                blocks[key_name] = aR[info["start"][j]:info["end"][j]]
+            if acc_component == "resultant":
+                for j in range(0, len(info["start"])):
+                    key_name = "resultant_" + str(j + 1)
+                    blocks[key_name] = aR[info["start"][j]:info["end"][j]]
+            elif acc_component == "vertical":
+                for j in range(0, len(info["start"])):
+                    key_name = "vertical_" + str(j + 1)
+                    blocks[key_name] = aX[info["start"][j]:info["end"][j]]
 
             # Find peaks for all blocks
             # Peaks criteria
@@ -162,4 +184,4 @@ def main(data_dir, output_dir, samp_freq=100, min_peak_height=1.3):
     print("Done!")
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
