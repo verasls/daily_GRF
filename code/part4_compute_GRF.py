@@ -31,8 +31,7 @@ def set_paths(data_dir, output_dir):
 
     # Check if there are the same number of info and acc files
     if len(info_files) == len(acc_files) is False:
-        raise ValueError
-        print("There is a different number of info and acc files")
+        raise ValueError("There is a different number of info and acc files")
 
 
 def get_body_mass(bm_df, ID_num, eval_num):
@@ -42,13 +41,11 @@ def get_body_mass(bm_df, ID_num, eval_num):
     # Check if there is only one index corresponding to the subject,
     # otherwise there was an error
     if len(ID_idx) > 1:
-        raise ValueError
-        print("More than one entry for the same subject was found in the "
-              "body_mass.txt file")
+        raise ValueError("More than one entry for the same subject was found "
+                         "in the body_mass.txt file")
     if len(ID_idx) == 0:
-        raise ValueError
-        print("No entry was found for the current subject in the "
-              "body_mass.txt file")
+        raise ValueError("No entry was found for the current subject in the "
+                         "body_mass.txt file")
     ID_idx = int(ID_idx[0])
     body_mass = bm_df.loc[ID_idx, "body_mass"]
 
