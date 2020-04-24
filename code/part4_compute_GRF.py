@@ -144,27 +144,14 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
             d["week_day"].append(info["week_day"][i])
             d["duration"].append(info["duration"][i])
             d["n_peaks"].append(len(acc))
-            d["n_threshold"].append(len(np.where(acc > thrsh)[0]))
-            d["min_peaks"].append(min(GRF))
-            d["max_peaks"].append(max(GRF))
-            d["mean_peaks"].append(np.mean(GRF))
-            d["sd_peaks"].append(np.std(GRF))
-            d["sum_peaks"].append(np.sum(GRF))
-    elif GRF_component == "both":
-        for i in range(0, len(acc_peaks)):
-            for j in ("resultant", "vertical"):
-                print("Computing ground reaction forces for block", str(i + 1))
-                # Compute GRF
-                acc = acc_peaks[list(acc_peaks)[i]]
-                GRF = compute_GRF(acc, body_mass, j, acc_placement)
-                # Fill variables
-                d["ID"].append(ID_num)
-                d["eval"].append(eval_num)
-                d["acc_placement"].append(acc_placement)
-                d["GRF_component"].append(j)
-                d["week_day"].append(info["week_day"][i])
-                d["duration"].append(info["duration"][i])
-                d["n_peaks"].append(len(acc))
+            if len(acc) == 0:
+                d["n_threshold"].append(0)
+                d["min_peaks"].append(0)
+                d["max_peaks"].append(0)
+                d["mean_peaks"].append(0)
+                d["sd_peaks"].append(0)
+                d["sum_peaks"].append(0)
+            else:
                 d["n_threshold"].append(len(np.where(acc > thrsh)[0]))
                 d["min_peaks"].append(min(GRF))
                 d["max_peaks"].append(max(GRF))
