@@ -12,6 +12,8 @@ get_time() {
 # Define variables to be used as arguments
 data_dir="/Volumes/LVERAS/daily_GRF/data/"
 base_output_dir="/Volumes/LVERAS/daily_GRF/output/"
+component="resultant"
+placement="back"
 
 echo $'Running analysis...\n'
 start=$(date +%s)
@@ -51,7 +53,7 @@ for d in "${data_dir}"*/; do
 	echo $'...filter raw accelerometer signal and find acceleration peaks'
 	echo $'Script part3_process_raw_acc.py\n'
 	start3=$(date +%s)
-	python3 code/part3_process_raw_acc.py $data_dir $output_dir
+	python3 code/part3_process_raw_acc.py $data_dir $output_dir $component
 	end3=$(date +%s)
 	time3=$(( $end3 - $start3 ))
 	echo $'\n'
@@ -61,7 +63,7 @@ for d in "${data_dir}"*/; do
 	echo $'Part 4: Compute ground reaction forces'
 	echo $'Script part4_compute_GRF\n'
 	start4=$(date +%s)
-	python3 code/part4_compute_GRF.py $data_dir $output_dir
+	python3 code/part4_compute_GRF.py $data_dir $output_dir $component $placement
 	end4=$(date +%s)
 	time4=$(( $end4 - $start4 ))
 	echo $'\n'
