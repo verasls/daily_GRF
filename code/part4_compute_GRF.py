@@ -150,6 +150,27 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
             d["mean_peaks"].append(np.mean(GRF))
             d["sd_peaks"].append(np.std(GRF))
             d["sum_peaks"].append(np.sum(GRF))
+    elif GRF_component == "both":
+        for i in range(0, len(acc_peaks)):
+            for j in ("resultant", "vertical"):
+                print("Computing ground reaction forces for block", str(i + 1))
+                # Compute GRF
+                acc = acc_peaks[list(acc_peaks)[i]]
+                GRF = compute_GRF(acc, body_mass, j, acc_placement)
+                # Fill variables
+                d["ID"].append(ID_num)
+                d["eval"].append(eval_num)
+                d["acc_placement"].append(acc_placement)
+                d["GRF_component"].append(j)
+                d["week_day"].append(info["week_day"][i])
+                d["duration"].append(info["duration"][i])
+                d["n_peaks"].append(len(acc))
+                d["n_threshold"].append(len(np.where(acc > thrsh)[0]))
+                d["min_peaks"].append(min(GRF))
+                d["max_peaks"].append(max(GRF))
+                d["mean_peaks"].append(np.mean(GRF))
+                d["sd_peaks"].append(np.std(GRF))
+                d["sum_peaks"].append(np.sum(GRF))
     else:
         raise ValueError("GRF_component value must be resultant or vertical")
 
@@ -161,6 +182,8 @@ def write_GRF_data(ID_num, eval_num, data):
     if os.path.exists(acc_output_dir + "GRF_data.csv") is False:
         # Put dict into a dataframe
         df = pd.DataFrame(data)
+        df = df.sort_values(by=["ID", "eval", "acc_placement",
+                                "GRF_component"])
         # Write a csv file
         df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
     else:
@@ -192,7 +215,8 @@ def write_GRF_data(ID_num, eval_num, data):
             df = df.append(df_new)
             # Sort by ID
             df["ID"] = df["ID"].astype(int)
-            df = df.sort_values(by=["ID", "eval"])
+            df = df.sort_values(by=["ID", "eval", "acc_placement",
+                                    "GRF_component"])
             # Write a csv file
             df.to_csv(acc_output_dir + "GRF_data.csv", index=False)
 
