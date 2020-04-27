@@ -74,28 +74,26 @@ def get_equation_coefficients(GRF_component, acc_placement):
         b2 = - 345.2605
         b3 = 3.8294
         b4 = 6.0219
-        thrsh = 2.5
     elif GRF_component == "vertical" and acc_placement == "back":
         b0 = - 776.8934
         b1 = 1042.9052
         b2 = - 336.2115
         b3 = 6.213
         b4 = 5.0805
-        thrsh = 2.5
     elif GRF_component == "resultant" and acc_placement == "hip":
         b0 = - 300.9909
         b1 = 522.6850
         b2 = - 171.5606
         b3 = 3.9596
         b4 = 5.3671
-        thrsh = 3
     elif GRF_component == "vertical" and acc_placement == "hip":
         b0 = - 435.7365
         b1 = 586.6627
         b2 = - 188.9689
         b3 = 5.8047
         b4 = 4.9544
-        thrsh = 3
+
+    thrsh = 3
 
 
 def compute_GRF(acc, body_mass, GRF_component, acc_placement):
@@ -108,7 +106,11 @@ def compute_GRF(acc, body_mass, GRF_component, acc_placement):
 
 
 def get_pks_interval(data, lim1, lim2):
-    peaks_interval = np.where((data > lim1) & (data <= lim2))[0]
+    if lim2 is None:
+        peaks_interval = np.where(data >= lim1)[0]
+    else:
+        peaks_interval = np.where((data > lim1) & (data <= lim2))[0]
+
     return peaks_interval
 
 
@@ -138,6 +140,13 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
          "n_g_2.4-2.6": [],
          "n_g_2.6-2.8": [],
          "n_g_2.8-3.0": [],
+         "n_g_3.0-4.0": [],
+         "n_g_4.0-5.0": [],
+         "n_g_5.0-6.0": [],
+         "n_g_6.0-7.0": [],
+         "n_g_7.0-8.0": [],
+         "n_g_8.0-9.0": [],
+         "n_g_9.0": [],
          "sum_GRF_N_g_1.2-1.4": [],
          "sum_GRF_N_g_1.4-1.6": [],
          "sum_GRF_N_g_1.6-1.8": [],
@@ -152,26 +161,24 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
          "mean_peaks_BW": [],
          "sd_peaks_BW": [],
          "sum_peaks_BW": [],
-         "n_BW_1.0-1.2": [],
-         "n_BW_1.2-1.4": [],
-         "n_BW_1.4-1.6": [],
-         "n_BW_1.6-1.8": [],
-         "n_BW_1.8-2.0": [],
-         "n_BW_2.0-2.2": [],
-         "n_BW_2.2-2.4": [],
-         "n_BW_2.4-2.6": [],
-         "n_BW_2.6-2.8": [],
-         "n_BW_2.8-3.0": [],
-         "sum_GRF_N_BW_1.0-1.2": [],
-         "sum_GRF_N_BW_1.2-1.4": [],
-         "sum_GRF_N_BW_1.4-1.6": [],
-         "sum_GRF_N_BW_1.6-1.8": [],
-         "sum_GRF_N_BW_1.8-2.0": [],
-         "sum_GRF_N_BW_2.0-2.2": [],
-         "sum_GRF_N_BW_2.2-2.4": [],
-         "sum_GRF_N_BW_2.4-2.6": [],
-         "sum_GRF_N_BW_2.6-2.8": [],
-         "sum_GRF_N_BW_2.8-3.0": []}
+         "n_BW_1.0-1.1": [],
+         "n_BW_1.1-1.2": [],
+         "n_BW_1.2-1.3": [],
+         "n_BW_1.3-1.4": [],
+         "n_BW_1.4-1.5": [],
+         "n_BW_1.5-1.6": [],
+         "n_BW_1.6-1.7": [],
+         "n_BW_1.7-1.8": [],
+         "n_BW_1.8": [],
+         "sum_GRF_N_BW_1.0-1.1": [],
+         "sum_GRF_N_BW_1.1-1.2": [],
+         "sum_GRF_N_BW_1.2-1.3": [],
+         "sum_GRF_N_BW_1.3-1.4": [],
+         "sum_GRF_N_BW_1.4-1.5": [],
+         "sum_GRF_N_BW_1.5-1.6": [],
+         "sum_GRF_N_BW_1.6-1.7": [],
+         "sum_GRF_N_BW_1.7-1.8": [],
+         "sum_GRF_N_BW_1.8": []}
 
     if GRF_component in ("resultant", "vertical"):
         # Compute GRF for all of the wear time blocks using one of the
@@ -180,7 +187,15 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
             print("Computing ground reaction forces for block", str(i + 1))
             # Compute GRF
             acc = acc_peaks[list(acc_peaks)[i]]
+            # Compute ground reaction force (in N)
             GRF = compute_GRF(acc, body_mass, GRF_component, acc_placement)
+            # Get number of peaks above the threshold
+            n_threshold = len(np.where(acc > thrsh)[0])
+            # Remove those peaks from the GRF array
+            GRF = np.delete(GRF, np.where(acc > thrsh)[0])
+            # Create an acc array with the peaks above threshold removed
+            acc_new = np.delete(acc, np.where(acc > thrsh)[0])
+            # Compute ground reaction force (in BW)
             BW = GRF / (body_mass * 9.81)
             # Fill variables
             d["ID"].append(ID_num)
@@ -203,7 +218,7 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                 d["sd_peaks_BW"].append(0)
                 d["sum_peaks_BW"].append(0)
             else:
-                d["n_threshold"].append(len(np.where(acc > thrsh)[0]))
+                d["n_threshold"].append(n_threshold)
                 d["min_peaks_N"].append(min(GRF))
                 d["max_peaks_N"].append(max(GRF))
                 d["mean_peaks_N"].append(np.mean(GRF))
@@ -218,59 +233,54 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                 d["n_g_2.4-2.6"].append(len(get_pks_interval(acc, 2.4, 2.6)))
                 d["n_g_2.6-2.8"].append(len(get_pks_interval(acc, 2.6, 2.8)))
                 d["n_g_2.8-3.0"].append(len(get_pks_interval(acc, 2.8, 3.0)))
+                d["n_g_3.0-4.0"].append(len(get_pks_interval(acc, 3.0, 4.0)))
+                d["n_g_4.0-5.0"].append(len(get_pks_interval(acc, 4.0, 5.0)))
+                d["n_g_5.0-6.0"].append(len(get_pks_interval(acc, 5.0, 6.0)))
+                d["n_g_6.0-7.0"].append(len(get_pks_interval(acc, 6.0, 7.0)))
+                d["n_g_7.0-8.0"].append(len(get_pks_interval(acc, 7.0, 8.0)))
+                d["n_g_8.0-9.0"].append(len(get_pks_interval(acc, 8.0, 9.0)))
+                d["n_g_9.0"].append(len(get_pks_interval(acc, 9.0, None)))
                 d["sum_GRF_N_g_1.2-1.4"].append(sum(GRF[get_pks_interval(
-                                                acc, 1.2, 1.4)]))
+                                                acc_new, 1.2, 1.4)]))
                 d["sum_GRF_N_g_1.4-1.6"].append(sum(GRF[get_pks_interval(
-                                                acc, 1.4, 1.6)]))
+                                                acc_new, 1.4, 1.6)]))
                 d["sum_GRF_N_g_1.6-1.8"].append(sum(GRF[get_pks_interval(
-                                                acc, 1.6, 1.8)]))
+                                                acc_new, 1.6, 1.8)]))
                 d["sum_GRF_N_g_1.8-2.0"].append(sum(GRF[get_pks_interval(
-                                                acc, 1.8, 2.0)]))
+                                                acc_new, 1.8, 2.0)]))
                 d["sum_GRF_N_g_2.0-2.2"].append(sum(GRF[get_pks_interval(
-                                                acc, 2.0, 2.2)]))
+                                                acc_new, 2.0, 2.2)]))
                 d["sum_GRF_N_g_2.2-2.4"].append(sum(GRF[get_pks_interval(
-                                                acc, 2.2, 2.4)]))
+                                                acc_new, 2.2, 2.4)]))
                 d["sum_GRF_N_g_2.4-2.6"].append(sum(GRF[get_pks_interval(
-                                                acc, 2.4, 2.6)]))
+                                                acc_new, 2.4, 2.6)]))
                 d["sum_GRF_N_g_2.6-2.8"].append(sum(GRF[get_pks_interval(
-                                                acc, 2.6, 2.8)]))
+                                                acc_new, 2.6, 2.8)]))
                 d["sum_GRF_N_g_2.8-3.0"].append(sum(GRF[get_pks_interval(
-                                                acc, 2.8, 3.0)]))
+                                                acc_new, 2.8, 3.0)]))
                 d["min_peaks_BW"].append(min(BW))
                 d["max_peaks_BW"].append(max(BW))
                 d["mean_peaks_BW"].append(np.mean(BW))
                 d["sd_peaks_BW"].append(np.std(BW))
                 d["sum_peaks_BW"].append(np.sum(BW))
-                d["n_BW_1.0-1.2"].append(len(get_pks_interval(BW, 1.0, 1.2)))
-                d["n_BW_1.2-1.4"].append(len(get_pks_interval(BW, 1.2, 1.4)))
-                d["n_BW_1.4-1.6"].append(len(get_pks_interval(BW, 1.4, 1.6)))
-                d["n_BW_1.6-1.8"].append(len(get_pks_interval(BW, 1.6, 1.8)))
-                d["n_BW_1.8-2.0"].append(len(get_pks_interval(BW, 1.8, 2.0)))
-                d["n_BW_2.0-2.2"].append(len(get_pks_interval(BW, 2.0, 2.2)))
-                d["n_BW_2.2-2.4"].append(len(get_pks_interval(BW, 2.2, 2.4)))
-                d["n_BW_2.4-2.6"].append(len(get_pks_interval(BW, 2.4, 2.6)))
-                d["n_BW_2.6-2.8"].append(len(get_pks_interval(BW, 2.6, 2.8)))
-                d["n_BW_2.8-3.0"].append(len(get_pks_interval(BW, 2.8, 3.0)))
-                d["sum_GRF_N_BW_1.0-1.2"].append(sum(BW[get_pks_interval(
-                                                 BW, 1.0, 1.2)]))
-                d["sum_GRF_N_BW_1.2-1.4"].append(sum(BW[get_pks_interval(
-                                                 BW, 1.2, 1.4)]))
-                d["sum_GRF_N_BW_1.4-1.6"].append(sum(BW[get_pks_interval(
-                                                 BW, 1.4, 1.6)]))
-                d["sum_GRF_N_BW_1.6-1.8"].append(sum(BW[get_pks_interval(
-                                                 BW, 1.6, 1.8)]))
-                d["sum_GRF_N_BW_1.8-2.0"].append(sum(BW[get_pks_interval(
-                                                 BW, 1.8, 2.0)]))
-                d["sum_GRF_N_BW_2.0-2.2"].append(sum(BW[get_pks_interval(
-                                                 BW, 2.0, 2.2)]))
-                d["sum_GRF_N_BW_2.2-2.4"].append(sum(BW[get_pks_interval(
-                                                 BW, 2.2, 2.4)]))
-                d["sum_GRF_N_BW_2.4-2.6"].append(sum(BW[get_pks_interval(
-                                                 BW, 2.4, 2.6)]))
-                d["sum_GRF_N_BW_2.6-2.8"].append(sum(BW[get_pks_interval(
-                                                 BW, 2.6, 2.8)]))
-                d["sum_GRF_N_BW_2.8-3.0"].append(sum(BW[get_pks_interval(
-                                                 BW, 2.8, 3.0)]))
+                d["n_BW_1.0-1.1"].append(len(get_pks_interval(BW, 1.0, 1.1)))
+                d["n_BW_1.1-1.2"].append(len(get_pks_interval(BW, 1.1, 1.2)))
+                d["n_BW_1.2-1.3"].append(len(get_pks_interval(BW, 1.2, 1.3)))
+                d["n_BW_1.3-1.4"].append(len(get_pks_interval(BW, 1.3, 1.4)))
+                d["n_BW_1.4-1.5"].append(len(get_pks_interval(BW, 1.4, 1.5)))
+                d["n_BW_1.5-1.6"].append(len(get_pks_interval(BW, 1.5, 1.6)))
+                d["n_BW_1.6-1.7"].append(len(get_pks_interval(BW, 1.6, 1.7)))
+                d["n_BW_1.7-1.8"].append(len(get_pks_interval(BW, 1.7, 1.8)))
+                d["n_BW_1.8"].append(len(get_pks_interval(BW, 1.8, None)))
+                d["sum_GRF_N_BW_1.0-1.1"].append(sum(BW[get_pks_interval(BW, 1.0, 1.1)]))
+                d["sum_GRF_N_BW_1.1-1.2"].append(sum(BW[get_pks_interval(BW, 1.1, 1.2)]))
+                d["sum_GRF_N_BW_1.2-1.3"].append(sum(BW[get_pks_interval(BW, 1.2, 1.3)]))
+                d["sum_GRF_N_BW_1.3-1.4"].append(sum(BW[get_pks_interval(BW, 1.3, 1.4)]))
+                d["sum_GRF_N_BW_1.4-1.5"].append(sum(BW[get_pks_interval(BW, 1.4, 1.5)]))
+                d["sum_GRF_N_BW_1.5-1.6"].append(sum(BW[get_pks_interval(BW, 1.5, 1.6)]))
+                d["sum_GRF_N_BW_1.6-1.7"].append(sum(BW[get_pks_interval(BW, 1.6, 1.7)]))
+                d["sum_GRF_N_BW_1.7-1.8"].append(sum(BW[get_pks_interval(BW, 1.7, 1.8)]))
+                d["sum_GRF_N_BW_1.8"].append(sum(BW[get_pks_interval(BW, 1.8, None)]))
     else:
         raise ValueError("GRF_component value must be resultant or vertical")
 
