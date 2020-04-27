@@ -88,7 +88,7 @@ def filter_acc_signal(sig, samp_freq=100):
 
 
 def main(data_dir, output_dir, acc_component, samp_freq=100,
-         min_peak_height=1.3):
+         min_peak_height=1.2):
     set_pahts(data_dir, output_dir)
 
     if acc_component not in ("resultant", "vertical"):
