@@ -31,9 +31,10 @@ convert_gt3x <- function(files, gt3x_data_dir, gt3x_output_dir) {
     output_path <- str_c(gt3x_output_dir, output_file, sep = "")
     if (file.exists(output_path) == FALSE) {
       message <- str_c(
-        "Reading file ", i, " out of ", length(files), ": ", files[i], sep = ""
+        "\nReading file ", i, " out of ", length(files), 
+        ": ", files[i], "\n", sep = ""
       )
-      print(message)
+      cat(message)
       # Read gt3x file (raw)
       start_time <- Sys.time()
       data_file <- str_c(gt3x_data_dir, files[i], sep = "")
@@ -59,8 +60,10 @@ convert_gt3x <- function(files, gt3x_data_dir, gt3x_output_dir) {
       message <- str_c("File written: ", output_file, sep = "")
       print(message)
     } else {
-      message <- str_c("File ", files[i], " has already been processed", sep = "")
-      print(message)
+      message <- str_c(
+        "\nFile ", files[i], " has already been processed\n", sep = ""
+      )
+      cat(message)
     }
   }
   
