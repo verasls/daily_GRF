@@ -212,11 +212,54 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                 d["mean_peaks_N"].append(0)
                 d["sd_peaks_N"].append(0)
                 d["sum_peaks_N"].append(0)
-                d["min_peaks_N"].append(0)
+                d["n_g_1.2-1.4"].append(0)
+                d["n_g_1.4-1.6"].append(0)
+                d["n_g_1.6-1.8"].append(0)
+                d["n_g_1.8-2.0"].append(0)
+                d["n_g_2.0-2.2"].append(0)
+                d["n_g_2.2-2.4"].append(0)
+                d["n_g_2.4-2.6"].append(0)
+                d["n_g_2.6-2.8"].append(0)
+                d["n_g_2.8-3.0"].append(0)
+                d["n_g_3.0-4.0"].append(0)
+                d["n_g_4.0-5.0"].append(0)
+                d["n_g_5.0-6.0"].append(0)
+                d["n_g_6.0-7.0"].append(0)
+                d["n_g_7.0-8.0"].append(0)
+                d["n_g_8.0-9.0"].append(0)
+                d["n_g_9.0"].append(0)
+                d["sum_GRF_N_g_1.2-1.4"].append(0)
+                d["sum_GRF_N_g_1.4-1.6"].append(0)
+                d["sum_GRF_N_g_1.6-1.8"].append(0)
+                d["sum_GRF_N_g_1.8-2.0"].append(0)
+                d["sum_GRF_N_g_2.0-2.2"].append(0)
+                d["sum_GRF_N_g_2.2-2.4"].append(0)
+                d["sum_GRF_N_g_2.4-2.6"].append(0)
+                d["sum_GRF_N_g_2.6-2.8"].append(0)
+                d["sum_GRF_N_g_2.8-3.0"].append(0)
+                d["min_peaks_BW"].append(0)
                 d["max_peaks_BW"].append(0)
                 d["mean_peaks_BW"].append(0)
                 d["sd_peaks_BW"].append(0)
                 d["sum_peaks_BW"].append(0)
+                d["n_BW_1.0-1.1"].append(0)
+                d["n_BW_1.1-1.2"].append(0)
+                d["n_BW_1.2-1.3"].append(0)
+                d["n_BW_1.3-1.4"].append(0)
+                d["n_BW_1.4-1.5"].append(0)
+                d["n_BW_1.5-1.6"].append(0)
+                d["n_BW_1.6-1.7"].append(0)
+                d["n_BW_1.7-1.8"].append(0)
+                d["n_BW_1.8"].append(0)
+                d["sum_GRF_N_BW_1.0-1.1"].append(0)
+                d["sum_GRF_N_BW_1.1-1.2"].append(0)
+                d["sum_GRF_N_BW_1.2-1.3"].append(0)
+                d["sum_GRF_N_BW_1.3-1.4"].append(0)
+                d["sum_GRF_N_BW_1.4-1.5"].append(0)
+                d["sum_GRF_N_BW_1.5-1.6"].append(0)
+                d["sum_GRF_N_BW_1.6-1.7"].append(0)
+                d["sum_GRF_N_BW_1.7-1.8"].append(0)
+                d["sum_GRF_N_BW_1.8"].append(0)
             else:
                 d["n_threshold"].append(n_threshold)
                 d["min_peaks_N"].append(min(GRF))
@@ -272,15 +315,24 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                 d["n_BW_1.6-1.7"].append(len(get_pks_interval(BW, 1.6, 1.7)))
                 d["n_BW_1.7-1.8"].append(len(get_pks_interval(BW, 1.7, 1.8)))
                 d["n_BW_1.8"].append(len(get_pks_interval(BW, 1.8, None)))
-                d["sum_GRF_N_BW_1.0-1.1"].append(sum(BW[get_pks_interval(BW, 1.0, 1.1)]))
-                d["sum_GRF_N_BW_1.1-1.2"].append(sum(BW[get_pks_interval(BW, 1.1, 1.2)]))
-                d["sum_GRF_N_BW_1.2-1.3"].append(sum(BW[get_pks_interval(BW, 1.2, 1.3)]))
-                d["sum_GRF_N_BW_1.3-1.4"].append(sum(BW[get_pks_interval(BW, 1.3, 1.4)]))
-                d["sum_GRF_N_BW_1.4-1.5"].append(sum(BW[get_pks_interval(BW, 1.4, 1.5)]))
-                d["sum_GRF_N_BW_1.5-1.6"].append(sum(BW[get_pks_interval(BW, 1.5, 1.6)]))
-                d["sum_GRF_N_BW_1.6-1.7"].append(sum(BW[get_pks_interval(BW, 1.6, 1.7)]))
-                d["sum_GRF_N_BW_1.7-1.8"].append(sum(BW[get_pks_interval(BW, 1.7, 1.8)]))
-                d["sum_GRF_N_BW_1.8"].append(sum(BW[get_pks_interval(BW, 1.8, None)]))
+                d["sum_GRF_N_BW_1.0-1.1"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.0, 1.1)]))
+                d["sum_GRF_N_BW_1.1-1.2"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.1, 1.2)]))
+                d["sum_GRF_N_BW_1.2-1.3"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.2, 1.3)]))
+                d["sum_GRF_N_BW_1.3-1.4"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.3, 1.4)]))
+                d["sum_GRF_N_BW_1.4-1.5"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.4, 1.5)]))
+                d["sum_GRF_N_BW_1.5-1.6"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.5, 1.6)]))
+                d["sum_GRF_N_BW_1.6-1.7"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.6, 1.7)]))
+                d["sum_GRF_N_BW_1.7-1.8"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.7, 1.8)]))
+                d["sum_GRF_N_BW_1.8"].append(sum(BW[get_pks_interval(
+                                                        BW, 1.8, None)]))
     else:
         raise ValueError("GRF_component value must be resultant or vertical")
 
@@ -346,7 +398,7 @@ def main(data_dir, output_dir, GRF_component, acc_placement):
 
     # Compute GRF
     for i in range(0, len(acc_files)):
-        print("Processing file", i + 1, "out of", len(acc_files))
+        print("\nProcessing file", i + 1, "out of", len(acc_files))
         # Get info from file name
         ID_num = acc_files[i][:3]
         eval_num = acc_files[i][4:7]
