@@ -96,7 +96,7 @@ def main(data_dir, output_dir, acc_component, samp_freq=100,
 
     # Process raw data
     for i in range(0, len(log_files)):
-        print("Processing file", i + 1, "out of", len(log_files))
+        print("\nProcessing file", i + 1, "out of", len(log_files))
 
         # Get info from file name
         ID_num = log_files[i][:3]
@@ -177,7 +177,7 @@ def main(data_dir, output_dir, acc_component, samp_freq=100,
                 pickle.dump(blocks, handle)
             print("File written:", ID_num + "_" + eval_num + "_acc_peaks.txt")
         else:
-            message = "File " + ID_num + "_" + eval_num + "_acc_peaks.txt"
+            message = "\nFile " + ID_num + "_" + eval_num + "_acc_peaks.txt"
             message = message + " already exists"
             print(message)
 
