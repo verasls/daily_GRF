@@ -43,22 +43,22 @@ convert_gt3x <- function(files, gt3x_data_dir, gt3x_output_dir) {
       )
       end_time <- Sys.time()
       time <- round(as.numeric(difftime(end_time, start_time, units = "secs")), 1)
-      message <- str_c("Reading took ", time, " seconds", sep = "")
-      print(message)
+      message <- str_c("Reading took ", time, " seconds\n", sep = "")
+      cat(message)
       
       # Select only the acc axes
       gt3x <- gt3x[, 1:3]
       
-      print("Converting gt3x into txt")
+      cat("Converting gt3x into txt\n")
       # Write raw data into a txt file    
       start_time <- Sys.time()
       fwrite(gt3x, output_path)
       end_time <- Sys.time()
       time <- round(as.numeric(difftime(end_time, start_time, units = "secs")), 1)
-      message <- str_c("Conversion took ", time, " seconds", sep = "")
-      print(message)
-      message <- str_c("File written: ", output_file, sep = "")
-      print(message)
+      message <- str_c("Conversion took ", time, " seconds\n", sep = "")
+      cat(message)
+      message <- str_c("File written: ", output_file, "\n", sep = "")
+      cat(message)
     } else {
       message <- str_c(
         "\nFile ", files[i], " has already been processed\n", sep = ""
@@ -67,7 +67,7 @@ convert_gt3x <- function(files, gt3x_data_dir, gt3x_output_dir) {
     }
   }
   
-  print("Done!")
+  cat("Done!\n")
 }
 
 main <- function(data_dir, output_dir) {
