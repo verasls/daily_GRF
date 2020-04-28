@@ -56,7 +56,7 @@ filter_GRF_data <- function(min_hours_crit = 600, min_days_crit = 3) {
   }
   df <- df %>% ungroup()
   
-  cat("Writing file GRF_data.csv")
+  cat("Writing file GRF_data.csv\n")
   output_file <- str_c(grf_output_dir, "GRF_data.csv")
   write_csv(df, output_file)
   return(df)
@@ -77,7 +77,7 @@ summarise_GRF_data <- function(df) {
     summarise_if(is.numeric, mean) %>% 
     select(1:5, n_days, everything())
   
-  cat("Writing file summary_GRF_data.csv")
+  cat("Writing file summary_GRF_data.csv\n")
   output_file <- str_c(grf_output_dir, "summary_GRF_data.csv")
   write_csv(df, output_file)
 }
