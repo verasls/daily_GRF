@@ -23,7 +23,8 @@ mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
   # Mark wear time
   for (i in 1:length(files)) {
     message <- str_c(
-      "\nReading file ", i, " out of ", length(files), ": ", files[i], sep = ""
+      "\nReading file ", i, " out of ", length(files), 
+      ": ", files[i], "\n", sep = ""
     )
     cat(message)
     
@@ -41,7 +42,7 @@ mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
       agd <- readActigraph(data_file)
       
       # Mark wear and non-wear time using agd epoch file
-      print("Marking wear time")
+      cat("Marking wear time\n")
       invisible(capture.output(marked <- wearingMarking(
         dataset = agd,
         frame = 90,
@@ -63,10 +64,10 @@ mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
         )
       
       # Write log into txt
-      print("Writing wear time log")
+      cat("Writing wear time log\n")
       fwrite(wear_time_log, output_path)
-      message <- str_c("File written: ", output_file, sep = "")
-      print(message) 
+      message <- str_c("File written: ", output_file, "\n", sep = "")
+      cat(message) 
     } else {
       message <- str_c(
         "\nFile ", files[i], " has already been processed\n", sep = ""
@@ -75,7 +76,7 @@ mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
     }
   }
   
-  print("Done!")
+  cat("Done!\n")
 }
 
 main <- function(data_dir, output_dir) {
