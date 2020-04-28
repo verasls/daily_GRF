@@ -23,9 +23,9 @@ mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
   # Mark wear time
   for (i in 1:length(files)) {
     message <- str_c(
-      "Reading file ", i, " out of ", length(files), ": ", files[i], sep = ""
+      "\nReading file ", i, " out of ", length(files), ": ", files[i], sep = ""
     )
-    print(message)
+    cat(message)
     
     # Get info from file name
     ID_num <- str_sub(files[i], 1, 3)
@@ -68,8 +68,10 @@ mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
       message <- str_c("File written: ", output_file, sep = "")
       print(message) 
     } else {
-      message <- str_c("File ", files[i], " has already been processed", sep = "")
-      print(message)
+      message <- str_c(
+        "\nFile ", files[i], " has already been processed\n", sep = ""
+      )
+      cat(message)
     }
   }
   
