@@ -10,8 +10,8 @@ get_time() {
 }
 
 # Define variables to be used as arguments
-data_dir="/Volumes/LVERAS/daily_GRF/data/"
-base_output_dir="/Volumes/LVERAS/daily_GRF/output/"
+data_dir="/Volumes/LV_HD/Accelerometry/daily_GRF/data/"
+base_output_dir="/Volumes/LV_HD/Accelerometry/daily_GRF/output/"
 component="resultant"
 placement="back"
 
@@ -22,7 +22,7 @@ for d in "${data_dir}"*/; do
     data_dir="$d"
 
     # Define output dir
-    suffix="$(echo $data_dir | cut -d '/' -f 6)/"
+    suffix="$(echo $data_dir | cut -d '/' -f 7)/"
     output_dir="${base_output_dir}$suffix"
     
 	echo Selected directory: $data_dir
