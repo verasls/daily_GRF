@@ -29,7 +29,7 @@ for d in "${data_dir}"*/; do
 	echo
 	
 	echo $'Part 1: Convert gt3x files into txt'
-	echo $'Script part1_gt3x_to_txt.R\n'
+	echo $'Script part1_gt3x_to_txt.R'
 	start1=$(date +%s)
 	Rscript code/part1_gt3x_to_txt.R $data_dir $output_dir
 	end1=$(date +%s)
@@ -39,7 +39,7 @@ for d in "${data_dir}"*/; do
 	echo $'\n'
 	
 	echo $'Part 2: Detect and mark wear time'
-	echo $'Script part2_mark_wear_time.R\n'
+	echo $'Script part2_mark_wear_time.R'
 	start2=$(date +%s)
 	Rscript code/part2_mark_wear_time.R  $data_dir $output_dir
 	end2=$(date +%s)
@@ -51,7 +51,7 @@ for d in "${data_dir}"*/; do
 	echo $'Part 3: Process raw acc...'
 	echo $'...extract information from wear time log...'
 	echo $'...filter raw accelerometer signal and find acceleration peaks'
-	echo $'Script part3_process_raw_acc.py\n'
+	echo $'Script part3_process_raw_acc.py'
 	start3=$(date +%s)
 	python3 code/part3_process_raw_acc.py $data_dir $output_dir $component
 	end3=$(date +%s)
@@ -61,7 +61,7 @@ for d in "${data_dir}"*/; do
 	echo $'\n'
 	
 	echo $'Part 4: Compute ground reaction forces'
-	echo $'Script part4_compute_GRF\n'
+	echo $'Script part4_compute_GRF'
 	start4=$(date +%s)
 	python3 code/part4_compute_GRF.py $data_dir $output_dir $component $placement
 	end4=$(date +%s)
