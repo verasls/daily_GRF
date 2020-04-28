@@ -70,6 +70,16 @@ for d in "${data_dir}"*/; do
 	echo "Part 4 $(get_time $time4)"
 	echo $'\n'
 	
+	echo $'Part 5: Compute data summaries'
+	echo $'Script part5_clean_df'
+	start5=$(date +%s)
+	Rscript code/part5_clean_df.R $output_dir
+	end5=$(date +%s)
+	time5=$(( $end5 - $start5 ))
+	echo $'\n'
+	echo "Part 5 $(get_time $time5)"
+	echo $'\n'
+
 	echo $'Analysis finished'
 	echo $'\n'
 
