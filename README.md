@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3776197.svg)](https://doi.org/10.5281/zenodo.3776197)
+
 # daily_GRF
 
 Repo with code to predict ground reaction forces (GRF) based on daily living raw acceleration data using the methods describe by [Veras et al (2020)](https://link.springer.com/article/10.1007/s00198-020-05295-2).
