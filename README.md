@@ -37,3 +37,4 @@ R code. Simply cleans the summary data created in [Part 4](code/part4_compute_GR
 -  Allow to use with different epoch lengths and sample frequencies.
 	+  Automatically detect these parameters.
 - Allow to select which statistics will be computed.
+- Create a data dictionary.
