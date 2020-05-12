@@ -122,7 +122,7 @@ def filter_acc_signal(sig, samp_freq=100):
 
 
 def main(data_dir, output_dir, acc_component, samp_freq=100,
-         min_peak_height=1.2):
+         min_peak_height=1.3):
     """
     Main function. Set data and output directory paths using the set_pahts()
     function, loops through all files, find the acceleration peaks and writes
@@ -136,7 +136,7 @@ def main(data_dir, output_dir, acc_component, samp_freq=100,
         samp_freq: An interger with the acceleromter sample frequency. Defaults
             to 100Hz.
         min_peak_height: A float with the minimum acceleration value (in g) to
-            be considered a peak. Defaults to 1.2g.
+            be considered a peak. Defaults to 1.3g.
 
     Returns:
         Writes the acceleration peaks and wear time info dictionary into txt
