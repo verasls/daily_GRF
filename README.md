@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3776197.svg)](https://doi.org/10.5281/zenodo.3776197)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3822314.svg)](https://doi.org/10.5281/zenodo.3822314)
 
 # daily_GRF
 
