@@ -9,6 +9,16 @@ from scipy import signal
 
 
 def set_pahts(data_dir, output_dir):
+    """
+    Set the data and output paths
+
+    Args:
+        data_dir: A character string with the path to the data directory
+        output_dir: A character string with the path to the output directory
+
+    Returns:
+        Assigns the paths to global variables
+    """
     # Make variables global
     global log_data_dir
     global log_output_dir
@@ -43,6 +53,18 @@ def set_pahts(data_dir, output_dir):
 
 
 def get_wear_time_info(i, ID_num, eval_num):
+    """
+    Reads the wear time info file, puts it into a dictionary and makes the
+    dictionary global
+
+    Args:
+        i: Index of the file in the files list
+        ID_num: Subject ID number
+        eval_number: Subject eval number
+
+    Returns:
+        The  wear time info into a dictionary
+    """
     # Make info dict global
     global info
 
@@ -74,6 +96,18 @@ def get_wear_time_info(i, ID_num, eval_num):
 
 
 def filter_acc_signal(sig, samp_freq=100):
+    """
+    Filters the acceleration signal using a Butterworth 4th order low pass
+    filter with 20Hz cutoff frequency.
+
+    Args:
+        sig: A ndarray with the acceleration signal
+        samp_freq: An interger with the accelerometer sample frequency.
+            Defaults to 100.
+
+    Returns:
+        A ndarray with the filtered acceleration signal.
+    """
     # Create the lowpass filter
     N = 4  # Filter order
     cutoff = 20  # cut-off frequency (Hz)
@@ -89,6 +123,25 @@ def filter_acc_signal(sig, samp_freq=100):
 
 def main(data_dir, output_dir, acc_component, samp_freq=100,
          min_peak_height=1.2):
+    """
+    Main function. Set data and output directory paths using the set_pahts()
+    function, loops through all files, find the acceleration peaks and writes
+    the acceleration peaks and the wear time info dictionary.
+
+    Args:
+        data_dir: A character string with the path to the data directory
+        output_dir: A character string with the path to the output directory
+        acc_component: A character string indicating the acceleration vector
+            to be used. Values can be resultant or vertical.
+        samp_freq: An interger with the acceleromter sample frequency. Defaults
+            to 100Hz.
+        min_peak_height: A float with the minimum acceleration value (in g) to
+            be considered a peak. Defaults to 1.2g.
+
+    Returns:
+        Writes the acceleration peaks and wear time info dictionary into txt
+        files.
+    """
     set_pahts(data_dir, output_dir)
 
     if acc_component not in ("resultant", "vertical"):
