@@ -1,4 +1,14 @@
 set_paths <- function(data_dir, output_dir) {
+  # Set data and output paths
+  #
+  # Args:
+  #   data_dir: a character string with the path to the data directory
+  #   output_dir: a character string with the path to the output directory
+  #
+  # Returns:
+  #   Assigns the data_dir and output_dir variables to the global environment.
+  #   Creates the output directory if it does not exist.
+
   suppressPackageStartupMessages(require(stringr))
   
   # Set paths
@@ -15,6 +25,16 @@ set_paths <- function(data_dir, output_dir) {
 }
 
 convert_gt3x <- function(files, gt3x_data_dir, gt3x_output_dir) {
+  # Reads the raw accelerometer gt3x file and writes it into a txt file.
+  #
+  # Args:
+  #   gt3x_data_dir: a character string with the path to the gt3x data directory
+  #   gt3x_output_dir: a character string with the path to the gt3x output 
+  #     directory
+  #
+  # Returns:
+  #  Writes the raw accelerometer gt3x file into a txt file.
+
   suppressPackageStartupMessages(require(stringr))
   suppressPackageStartupMessages(require(read.gt3x))
   suppressPackageStartupMessages(require(data.table))
@@ -71,6 +91,17 @@ convert_gt3x <- function(files, gt3x_data_dir, gt3x_output_dir) {
 }
 
 main <- function(data_dir, output_dir) {
+  # Main function. Set data and output directory paths using set_paths() 
+  # function and converts the raw accelerometer data files using the 
+  # convert_gt3x() function.
+  #
+  # Args:
+  #   data_dir: a character string with the path to the data directory
+  #   output_dir: a character string with the path to the output directory
+  #
+  # Returns:
+  #  Writes the raw accelerometer gt3x file into a txt file.
+
   set_paths(data_dir, output_dir)
   convert_gt3x(files, gt3x_data_dir, gt3x_output_dir)
 }
