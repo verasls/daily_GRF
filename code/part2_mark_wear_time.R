@@ -1,4 +1,14 @@
 set_paths <- function(data_dir, output_dir) {
+  # Set data and output paths
+  #
+  # Args:
+  #   data_dir: a character string with the path to the data directory
+  #   output_dir: a character string with the path to the output directory
+  #
+  # Returns:
+  #   Assigns the data_dir and output_dir variables to the global environment.
+  #   Creates the output directory if it does not exist.
+
   suppressPackageStartupMessages(require(stringr))
   
   # Set paths
@@ -15,6 +25,17 @@ set_paths <- function(data_dir, output_dir) {
 }
 
 mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
+  # Reads the accelerometer agd files and detects wear and non-wear time.
+  # Accelerometer files must be in 60 sec epochs.
+  #
+  # Args:
+  #   agd_data_dir: a character string with the path to the agd data directory
+  #   agdx_output_dir: a character string with the path to the agd output 
+  #     directory
+  #
+  # Returns:
+  # Writes a txt file wirh summary information of the wear time periods. 
+
   suppressPackageStartupMessages(require(stringr))
   suppressPackageStartupMessages(require(dplyr))
   suppressPackageStartupMessages(require(PhysicalActivity))
@@ -80,6 +101,17 @@ mark_wear_time <- function(files, agd_data_dir, agd_output_dir) {
 }
 
 main <- function(data_dir, output_dir) {
+  # Main function. Set data and output directory paths using set_paths() 
+  # function and writes wear time log info into txt files using the 
+  # mark_wear_time() function.
+  #
+  # Args:
+  #   data_dir: a character string with the path to the data directory
+  #   output_dir: a character string with the path to the output directory
+  #
+  # Returns:
+  #  Writes the wear time info into txt files.
+
   set_paths(data_dir, output_dir)
   mark_wear_time(files, agd_data_dir, agd_output_dir)
 }
