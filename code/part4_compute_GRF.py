@@ -7,6 +7,16 @@ import numpy as np
 
 
 def set_paths(data_dir, output_dir):
+    """
+    Set the data and output paths
+
+    Args:
+        data_dir: A character string with the path to the data directory
+        output_dir: A character string with the path to the output directory
+
+    Returns:
+        Assigns the paths to global variables
+    """
     # Make variables global
     global body_mass_path
     global info_data_dir
@@ -35,6 +45,17 @@ def set_paths(data_dir, output_dir):
 
 
 def get_body_mass(bm_df, ID_num, eval_num):
+    """
+    Gets the subject body mass value in kilograms
+
+    Args:
+        bm_df: A pandas dataframe with the body mass values
+        ID_num: An interger with the subject ID number
+        eval_num: A character string with the subject eval number
+
+    Returns:
+        The subject body mass in kilograms
+    """
     # Find index corresponding to the current subject in the bm_df
     ID_idx = list(np.where((bm_df["ID"] == ID_num) &
                   (bm_df["eval"] == eval_num)))
@@ -53,6 +74,19 @@ def get_body_mass(bm_df, ID_num, eval_num):
 
 
 def get_equation_coefficients(GRF_component, acc_placement):
+    """
+    Get the ground reaction force prediction equation coefficients as described
+    by Veras et al (2020) Osteoporos Int.
+
+    Args:
+        GRF_component: A character string with the ground reaction force
+            component. Values can be resultant or vertical.
+        acc_placement: A character string with the accelerometer placement.
+            Values can be back or hip.
+
+    Returns:
+        The equation coefficients as global variables.
+    """
     # Make variables global
     global b0  # intercept
     global b1  # acc
@@ -97,6 +131,21 @@ def get_equation_coefficients(GRF_component, acc_placement):
 
 
 def compute_GRF(acc, body_mass, GRF_component, acc_placement):
+    """
+    Computes the peak ground reaction forces using peak acceleration values
+    using the equation developed by Veras et al (2020) Osteoporos Int.
+
+    Args:
+        acc: A ndarray with the acceleration peaks values
+        body_mass: A float with the subject body mass value in kilograms
+        GRF_component: A character string with the ground reaction force
+            component to be computed. Values can be resultant or vertical.
+        acc_placement: A character vector with the accelerometer placement.
+            Values can be back or hip.
+
+    Returns:
+        A ndarray with the peak ground reaction force values.
+    """
     get_equation_coefficients(GRF_component, acc_placement)
 
     GRF = b0 + (b1 * acc) + (b2 * (acc ** 2)) + (b3 * body_mass) \
@@ -106,6 +155,17 @@ def compute_GRF(acc, body_mass, GRF_component, acc_placement):
 
 
 def get_pks_interval(data, lim1, lim2):
+    """
+    Get the acceleration peaks values between two limits or above on limit.
+
+    Args:
+        data: A ndarray with the acceleration peaks.
+        lim1 and lim2: A float with the acceleration value (in g) to be used as
+            limit.
+
+    Returns:
+        A ndarray with the acceleration peaks values between the limits.
+    """
     if lim2 is None:
         peaks_interval = np.where(data >= lim1)[0]
     else:
@@ -116,7 +176,23 @@ def get_pks_interval(data, lim1, lim2):
 
 def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                   GRF_component, acc_placement):
+    """
+    Summarizes several parameters regarding the ground reaction forces values.
 
+    Args:
+        ID_num: An interger with the subject ID number
+        eval_num: A character vector with the subject eval number
+        info: A dictionary with the wear time info
+        acc_peaks: A ndarray with the acceleration peaks
+        body_mass: A float with the subject body mass in kilograms
+        GRF_component: A character vector with the ground reaction force
+            component. Values can be resultant or vertical
+        acc_placement: A character vector with the accelerometer placement.
+            Values can be back or hip
+
+    Returns:
+        A dictionary with the summaries of the ground reaction force values.
+    """
     # Initialize dictionary with variables of interest
     d = {"ID": [],
          "eval": [],
@@ -347,6 +423,17 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
 
 
 def write_GRF_data(ID_num, eval_num, data):
+    """
+    Writes the ground reaction forces summary dictionary into a csv file
+
+    Args:
+        ID_num: An interger with the subject ID number
+        eval_num: A character string with the subject eval number
+        data: A dictionary containing the ground reaction forces summary
+
+    Returns:
+        Writes the ground reaction forces summary into a csv file
+    """
     # Check if dataframe is already in a file, if not, write a new
     if os.path.exists(acc_output_dir + "GRF_data.csv") is False:
         # Put dict into a dataframe
@@ -391,6 +478,23 @@ def write_GRF_data(ID_num, eval_num, data):
 
 
 def main(data_dir, output_dir, GRF_component, acc_placement):
+    """
+    Main function. Set the data and output directory paths using the
+    set_paths() function, computes the ground reaction forces based on the 
+    acceleration peaks and writes the ground reaction forces summary into a csv
+    file.
+
+    Args:
+        data_dir: A character string with the path to the data directory
+        output_dir: A character string with the path to the output directory
+        GRF_component: A character vector with the ground reaction force
+            component. Values can be resultant or vertical
+        acc_placement: A character vector with the accelerometer placement.
+            Values can be back or hip
+
+    Returns:
+        Writes the summary of the gorund reaction forces values into a csv file
+    """
     set_paths(data_dir, output_dir)
 
     # Read body mass data
