@@ -207,7 +207,6 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
          "mean_peaks_N": [],
          "sd_peaks_N": [],
          "sum_peaks_N": [],
-         "n_g_1.2-1.3": [],
          "n_g_1.3-1.4": [],
          "n_g_1.4-1.6": [],
          "n_g_1.6-1.8": [],
@@ -224,7 +223,6 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
          "n_g_7.0-8.0": [],
          "n_g_8.0-9.0": [],
          "n_g_9.0": [],
-         "sum_GRF_N_g_1.2-1.3": [],
          "sum_GRF_N_g_1.3-1.4": [],
          "sum_GRF_N_g_1.4-1.6": [],
          "sum_GRF_N_g_1.6-1.8": [],
@@ -290,7 +288,6 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                 d["mean_peaks_N"].append(0)
                 d["sd_peaks_N"].append(0)
                 d["sum_peaks_N"].append(0)
-                d["n_g_1.2-1.3"].append(0)
                 d["n_g_1.3-1.4"].append(0)
                 d["n_g_1.4-1.6"].append(0)
                 d["n_g_1.6-1.8"].append(0)
@@ -307,7 +304,6 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                 d["n_g_7.0-8.0"].append(0)
                 d["n_g_8.0-9.0"].append(0)
                 d["n_g_9.0"].append(0)
-                d["sum_GRF_N_g_1.2-1.3"].append(0)
                 d["sum_GRF_N_g_1.3-1.4"].append(0)
                 d["sum_GRF_N_g_1.4-1.6"].append(0)
                 d["sum_GRF_N_g_1.6-1.8"].append(0)
@@ -347,7 +343,6 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                 d["mean_peaks_N"].append(np.mean(GRF))
                 d["sd_peaks_N"].append(np.std(GRF))
                 d["sum_peaks_N"].append(np.sum(GRF))
-                d["n_g_1.2-1.3"].append(len(get_pks_interval(acc, 1.2, 1.3)))
                 d["n_g_1.3-1.4"].append(len(get_pks_interval(acc, 1.3, 1.4)))
                 d["n_g_1.4-1.6"].append(len(get_pks_interval(acc, 1.4, 1.6)))
                 d["n_g_1.6-1.8"].append(len(get_pks_interval(acc, 1.6, 1.8)))
@@ -364,8 +359,6 @@ def summarize_GRF(ID_num, eval_num, info, acc_peaks, body_mass,
                 d["n_g_7.0-8.0"].append(len(get_pks_interval(acc, 7.0, 8.0)))
                 d["n_g_8.0-9.0"].append(len(get_pks_interval(acc, 8.0, 9.0)))
                 d["n_g_9.0"].append(len(get_pks_interval(acc, 9.0, None)))
-                d["sum_GRF_N_g_1.2-1.3"].append(sum(GRF[get_pks_interval(
-                                                acc_new, 1.2, 1.3)]))
                 d["sum_GRF_N_g_1.3-1.4"].append(sum(GRF[get_pks_interval(
                                                 acc_new, 1.3, 1.4)]))
                 d["sum_GRF_N_g_1.4-1.6"].append(sum(GRF[get_pks_interval(
